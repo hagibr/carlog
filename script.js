@@ -2,7 +2,7 @@
 let veiculos = JSON.parse(localStorage.getItem('veiculos')) || [];
 let entradas = JSON.parse(localStorage.getItem('entradas')) || [];
 let editandoId = null;
-let filtrosAtivos = ['abastecimento', 'manutencao', 'imposto'];
+let filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
@@ -221,7 +221,7 @@ function editEntrada(id) {
     document.getElementById('man-local').value = entrada.detalhes.local;
     document.getElementById('man-pecas').value = formatar(entrada.detalhes.pecas, 2);
     document.getElementById('man-mao-obra').value = formatar(entrada.detalhes.mo, 2);
-  } else if (entrada.tipo === 'imposto') {
+  } else if (entrada.tipo === 'despesa') {
     document.getElementById('imp-nome').value = entrada.detalhes.nome;
     document.getElementById('imp-referencia').value = entrada.detalhes.ref;
     document.getElementById('imp-valor').value = formatar(entrada.valorTotal, 2);
@@ -332,7 +332,7 @@ function renderizarLista() {
   });
 
   const container = document.getElementById('lista-entradas-container');
-  const icones = { abastecimento: '⛽', manutencao: '🔧', imposto: '📜' };
+  const icones = { abastecimento: '⛽', manutencao: '🔧', despesa: '📜' };
 
   container.innerHTML = filtrados.map(e => {
     const v = veiculos.find(v => v.id == e.veiculoId);
@@ -360,7 +360,7 @@ function renderizarLista() {
         </div>
       `;
     } else {
-      localStr = e.detalhes.nome || 'Imposto';
+      localStr = e.detalhes.nome || 'Despesa';
       detalhesHtml = `
         <div class="detalhes-grid">
           <div><strong>Referência:</strong> ${e.detalhes.ref}</div>

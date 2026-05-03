@@ -48,7 +48,7 @@
             <select id="entrada-tipo" onchange="toggleTipoCampos()">
               <option value="abastecimento">Abastecimento</option>
               <option value="manutencao">Manutenção</option>
-              <option value="imposto">Imposto</option>
+              <option value="despesa">Despesa</option>
             </select>
           </div>
           <div class="form-group">
@@ -96,9 +96,9 @@
           </div>
         </div>
 
-        <!-- Campos Dinâmicos: Impostos -->
-        <div id="campos-imposto" class="tipo-especifico" style="display:none;">
-          <input type="text" id="imp-nome" placeholder="Nome do Imposto (IPVA, Licenciamento)">
+        <!-- Campos Dinâmicos: Despesas -->
+        <div id="campos-despesa" class="tipo-especifico" style="display:none;">
+          <input type="text" id="imp-nome" placeholder="Nome da Despesa (IPVA, Licenciamento, Multa)">
           <div class="grid-2">
             <input type="text" id="imp-valor" placeholder="Valor" inputmode="numeric" oninput="aplicarMascara(this, 2)">
             <input type="date" id="imp-referencia" title="Data de Referência">
@@ -124,7 +124,7 @@
           <button class="filtro-btn active" data-tipo="abastecimento" onclick="toggleFiltro(this)">⛽
             Abastecimento</button>
           <button class="filtro-btn active" data-tipo="manutencao" onclick="toggleFiltro(this)">🔧 Manutenção</button>
-          <button class="filtro-btn active" data-tipo="imposto" onclick="toggleFiltro(this)">📜 Imposto</button>
+          <button class="filtro-btn active" data-tipo="despesa" onclick="toggleFiltro(this)">📜 Despesa</button>
         </div>
       </div>
       <div id="lista-entradas-container" class="lista-entradas">
