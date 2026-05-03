@@ -1,3 +1,6 @@
+/* ==========================================================================
+   1. VARIÁVEIS E RESET GLOBAL
+   ========================================================================== */
 :root {
   --primary: #2563eb;
   --secondary: #64748b;
@@ -13,6 +16,9 @@ body {
   margin: 0;
 }
 
+/* ==========================================================================
+   2. LAYOUT E NAVEGAÇÃO (HEADER)
+   ========================================================================== */
 nav {
   background: var(--primary);
   color: white;
@@ -29,15 +35,6 @@ nav {
 .logo {
   font-weight: bold;
   font-size: 1.5rem;
-}
-
-button {
-  cursor: pointer;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background: #e2e8f0;
-  transition: 0.2s;
 }
 
 nav button {
@@ -63,10 +60,16 @@ section {
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* ==========================================================================
+   3. COMPONENTES DE INTERFACE (BOTÕES, INPUTS E GRIDS)
+   ========================================================================== */
+button {
+  cursor: pointer;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #e2e8f0;
+  transition: 0.2s;
 }
 
 input,
@@ -78,6 +81,13 @@ textarea {
   font-size: 1rem;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Sistema de Grids para Formulários */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -106,11 +116,90 @@ textarea {
   flex: 1;
 }
 
+/* Utilitários de Botão */
+.btn-del {
+  color: #ef4444;
+  font-size: 0.8rem;
+  background: none;
+}
+
+/* ==========================================================================
+   4. SEÇÃO DE VEÍCULOS
+   ========================================================================== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card-veiculo {
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-shortcuts {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.card-shortcuts button {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 0.4rem;
+  background: #f1f5f9;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.card-shortcuts button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-add-main {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 2px dashed #cbd5e1;
+  background: none;
+  color: var(--secondary);
+  font-weight: bold;
+}
+
+.btn-add-main:hover {
+  background: #f8fafc;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   5. SEÇÃO DE REGISTROS (FORMULÁRIOS)
+   ========================================================================== */
 .btn-save {
   background: var(--primary);
   color: white;
   font-weight: bold;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
   margin-top: 1rem;
+}
+
+.form-actions button {
+  flex: 1;
+}
+
+.form-actions .btn-cancel {
+  background: #ef4444;
+  color: white;
 }
 
 .tipo-especifico {
@@ -121,6 +210,25 @@ textarea {
   gap: 1rem;
 }
 
+.status-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: bold;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+
+.status-badge.edit {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+/* ==========================================================================
+   6. SEÇÃO DE RELATÓRIOS (CARDS EXPANSÍVEIS)
+   ========================================================================== */
 .filtros {
   display: flex;
   gap: 1rem;
@@ -211,92 +319,9 @@ textarea {
   font-size: 0.9rem;
 }
 
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.card-veiculo {
-  border: 1px solid #e2e8f0;
-  padding: 1rem;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.card-shortcuts {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.card-shortcuts button {
-  flex: 1;
-  font-size: 0.75rem;
-  padding: 0.4rem;
-  background: #f1f5f9;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-}
-
-.card-shortcuts button:hover {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-del {
-  color: #ef4444;
-  font-size: 0.8rem;
-  background: none;
-}
-
-.btn-add-main {
-  width: 100%;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border: 2px dashed #cbd5e1;
-  background: none;
-  color: var(--secondary);
-  font-weight: bold;
-}
-
-.btn-add-main:hover {
-  background: #f8fafc;
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.form-actions .btn-cancel {
-  background: #ef4444;
-  color: white;
-}
-
-.status-badge {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  background: #dcfce7;
-  color: #166534;
-  font-weight: bold;
-  margin-left: 0.5rem;
-  text-transform: uppercase;
-}
-
-.status-badge.edit {
-  background: #fef9c3;
-  color: #854d0e;
-}
-
-/* Ajustes Mobile */
+/* ==========================================================================
+   7. AJUSTES DE RESPONSIVIDADE (MOBILE)
+   ========================================================================== */
 @media (max-width: 600px) {
   nav {
     flex-direction: column;

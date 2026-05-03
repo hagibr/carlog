@@ -5,6 +5,10 @@ let editandoId = null;
 let filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
 
 // Inicialização
+/**
+ * Ponto de entrada da aplicação. Configura os listeners dos formulários 
+ * e decide qual seção exibir com base na existência de veículos.
+ */
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-veiculo').onsubmit = addVeiculo;
   document.getElementById('form-entrada').onsubmit = addEntrada;
@@ -17,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Navegação Simples
+/**
+ * Gerencia a troca de seções (abas) da aplicação.
+ * Limpa e prepara o formulário de registro se a seção de cadastro for ativada.
+ * @param {string} id - O ID da seção a ser exibida.
+ */
 function showSection(id) {
   if (id === 'section-cadastro') {
     const statusEl = document.getElementById('registro-status');
@@ -24,7 +33,7 @@ function showSection(id) {
     const tipoSelect = document.getElementById('entrada-tipo');
     if (!editandoId) {
       document.getElementById('form-entrada').reset();
-      document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar Registro';
+      document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar';
       const hoje = new Date().toISOString().split('T')[0];
       document.getElementById('entrada-data').value = hoje;
       toggleTipoCampos();
@@ -45,10 +54,14 @@ function showSection(id) {
 }
 
 // Função para cancelar a edição e iniciar um novo registro
+/**
+ * Reseta o estado de edição global e limpa o formulário de entrada,
+ * voltando para o modo "Novo Registro".
+ */
 function cancelEdit() {
   editandoId = null;
   document.getElementById('form-entrada').reset();
-  document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar Registro';
+  document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar';
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('entrada-data').value = hoje;
   document.getElementById('entrada-veiculo').disabled = veiculos.length <= 1;
@@ -60,6 +73,9 @@ function cancelEdit() {
   statusEl.className = 'status-badge';
 }
 
+/**
+ * Alterna a visibilidade do formulário de cadastro de novo veículo.
+ */
 function toggleFormVeiculo() {
   const form = document.getElementById('form-veiculo');
   const btn = document.getElementById('btn-novo-veiculo');
@@ -73,6 +89,10 @@ function toggleFormVeiculo() {
 }
 
 // Lógica de Veículos
+/**
+ * Captura os dados do formulário de veículos e salva no LocalStorage.
+ * @param {Event} e - Evento de submit do formulário.
+ */
 function addVeiculo(e) {
   e.preventDefault();
   const veiculo = {
@@ -86,6 +106,11 @@ function addVeiculo(e) {
   toggleFormVeiculo();
 }
 
+/**
+ * Remove um veículo e todas as entradas de gastos associadas a ele.
+ * Solicita confirmação antes de realizar a exclusão em cascata.
+ * @param {number} id - ID do veículo a ser removido.
+ */
 function deleteVeiculo(id) {
   if (confirm('Tem certeza que deseja excluir este veículo? Todas as entradas de gastos associadas a ele também serão apagadas permanentemente.')) {
     veiculos = veiculos.filter(v => v.id !== id);
@@ -94,18 +119,31 @@ function deleteVeiculo(id) {
   }
 }
 
+/**
+ * Atalho para navegar até a tela de registro já selecionando um veículo específico.
+ * @param {number} veiculoId - ID do veículo.
+ */
 function irPararegistros(veiculoId) {
   cancelEdit(); // Garante que o formulário esteja limpo e em modo "Novo"
   showSection('section-cadastro');
   document.getElementById('entrada-veiculo').value = veiculoId;
 }
 
+/**
+ * Atalho para navegar até a tela de relatórios já filtrando por um veículo específico.
+ * @param {number} veiculoId - ID do veículo.
+ */
 function irParaRelatorios(veiculoId) {
   showSection('section-lista');
   document.getElementById('filtro-veiculo').value = veiculoId;
   renderizarLista();
 }
 
+/**
+ * Busca o último KM registrado para um veículo específico até uma determinada data.
+ * É utilizado para sugerir o KM atual no preenchimento de novos registros.
+ * Ordena por data (desc) e KM (desc) para encontrar o valor mais coerente.
+ */
 function buscarUltimoKm() {
   if (editandoId) return;
 
@@ -126,6 +164,11 @@ function buscarUltimoKm() {
   }
 }
 
+/**
+ * Gerencia o estado dos filtros de categoria (Abastecimento, Manutenção, Despesa)
+ * no histórico, garantindo que pelo menos um filtro permaneça ativo.
+ * @param {HTMLElement} btn - O botão de filtro clicado.
+ */
 function toggleFiltro(btn) {
   const tipo = btn.dataset.tipo;
   if (filtrosAtivos.includes(tipo)) {
@@ -140,6 +183,10 @@ function toggleFiltro(btn) {
   renderizarLista();
 }
 
+/**
+ * Expande ou recolhe a seção de detalhes de um card no histórico de gastos.
+ * @param {number} id - ID da entrada de gasto.
+ */
 function toggleDetalhes(id) {
   const el = document.getElementById(`detalhes-${id}`);
   const isVisible = el.style.display === 'block';
@@ -147,6 +194,10 @@ function toggleDetalhes(id) {
 }
 
 // Lógica de Entradas
+/**
+ * Exibe os campos de formulário específicos para o tipo de gasto selecionado 
+ * (ex: campos de litros para abastecimento).
+ */
 function toggleTipoCampos() {
   const tipo = document.getElementById('entrada-tipo').value;
   document.querySelectorAll('.tipo-especifico').forEach(d => d.style.display = 'none');
@@ -154,11 +205,22 @@ function toggleTipoCampos() {
 }
 
 // Auxiliares para Máscara e Conversão
+/**
+ * Converte uma string formatada em moeda brasileira (1.234,56) para float (1234.56).
+ * @param {string} str - Valor formatado.
+ * @returns {number} Valor numérico pronto para cálculos.
+ */
 function parseFormattedFloat(str) {
   if (!str) return 0;
   return parseFloat(String(str).replace(/\./g, '').replace(',', '.')) || 0;
 }
 
+/**
+ * Formata um número para o padrão de string brasileiro com casas decimais fixas.
+ * @param {number} valor - O número a ser formatado.
+ * @param {number} casas - Número de casas decimais.
+ * @returns {string} String formatada (ex: 1.500,00).
+ */
 function formatar(valor, casas) {
   return valor.toLocaleString('pt-BR', {
     minimumFractionDigits: casas,
@@ -166,6 +228,11 @@ function formatar(valor, casas) {
   });
 }
 
+/**
+ * Aplica máscara numérica em tempo real no input (ex: 0,00 -> 0,01).
+ * @param {HTMLInputElement} el - O elemento input.
+ * @param {number} casas - Quantidade de decimais da máscara.
+ */
 function aplicarMascara(el, casas = 2) {
   let value = el.value.replace(/\D/g, '');
   if (value === '') return;
@@ -180,6 +247,12 @@ function aplicarMascara(el, casas = 2) {
 }
 
 // Cálculo Automático de Abastecimento
+/**
+ * Realiza o cálculo automático entre Litros, Preço por Litro e Total.
+ * Se litros e preço são fornecidos, calcula o total.
+ * Se total e litros são fornecidos, recalcula o preço unitário.
+ * @param {string} origem - Identifica qual campo disparou o cálculo.
+ */
 function calcAbastecimento(origem) {
   const litros = parseFormattedFloat(document.getElementById('abs-litros').value);
   const precoL = parseFormattedFloat(document.getElementById('abs-preco-litro').value);
@@ -196,6 +269,11 @@ function calcAbastecimento(origem) {
   }
 }
 
+/**
+ * Carrega os dados de um registro existente no formulário para edição.
+ * Desabilita campos que não podem ser alterados (veículo/tipo).
+ * @param {number} id - ID da entrada a ser editada.
+ */
 function editEntrada(id) {
   const entrada = entradas.find(e => e.id === id);
   if (!entrada) return;
@@ -227,9 +305,14 @@ function editEntrada(id) {
     document.getElementById('imp-valor').value = formatar(entrada.valorTotal, 2);
   }
 
-  document.querySelector('#form-entrada button[type="submit"]').textContent = 'Atualizar Registro';
+  document.querySelector('#form-entrada button[type="submit"]').textContent = 'Atualizar';
 }
 
+/**
+ * Processa o salvamento (criação ou atualização) de um registro de gasto.
+ * Consolida dados gerais e específicos por tipo antes de persistir.
+ * @param {Event} e - Evento de submit do formulário.
+ */
 function addEntrada(e) {
   e.preventDefault();
   const tipo = document.getElementById('entrada-tipo').value;
@@ -273,7 +356,7 @@ function addEntrada(e) {
     editandoId = null;
     document.getElementById('entrada-veiculo').disabled = false;
     document.getElementById('entrada-tipo').disabled = false;
-    document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar Registro';
+    document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar';
     const statusEl = document.getElementById('registro-status');
     statusEl.textContent = 'Novo';
     statusEl.className = 'status-badge';
@@ -287,12 +370,20 @@ function addEntrada(e) {
 }
 
 // Persistência e Renderização
+/**
+ * Salva os estados atuais de veículos e entradas no LocalStorage
+ * e dispara a atualização da interface.
+ */
 function salvarESincronizar() {
   localStorage.setItem('veiculos', JSON.stringify(veiculos));
   localStorage.setItem('entradas', JSON.stringify(entradas));
   atualizarUI();
 }
 
+/**
+ * Sincroniza os elementos globais da UI, como os menus de seleção de veículos,
+ * os cartões da aba de veículos e o estado dos filtros.
+ */
 function atualizarUI() {
   // Atualizar selects de veículos
   const selects = [document.getElementById('entrada-veiculo'), document.getElementById('filtro-veiculo')];
@@ -319,6 +410,11 @@ function atualizarUI() {
   renderizarLista();
 }
 
+/**
+ * Renderiza a lista de registros (Histórico) com base nos filtros ativos de 
+ * veículo e tipo de gasto. Aplica ordenação por data e KM (decrescente).
+ * Constrói o HTML dos cards expansíveis dinamicamente.
+ */
 function renderizarLista() {
   const fVeiculo = document.getElementById('filtro-veiculo').value;
 
@@ -395,6 +491,10 @@ function renderizarLista() {
   }
 }
 
+/**
+ * Remove uma entrada de gasto específica do histórico.
+ * @param {number} id - ID da entrada.
+ */
 function deleteEntrada(id) {
   if (confirm('Deseja excluir este registro?')) {
     entradas = entradas.filter(e => e.id !== id);

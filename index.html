@@ -9,6 +9,10 @@
 </head>
 
 <body>
+  <!-- 
+    CABECALHO E NAVEGACAO 
+    Mantem-se fixo no topo (sticky) para facilitar a alternancia entre as seções.
+  -->
   <nav>
     <div class="logo">CarLog</div>
     <div class="menu">
@@ -19,13 +23,19 @@
   </nav>
 
   <main>
-    <!-- Seção: Cadastro de Veículos -->
+    <!-- 
+      SECAO: MEUS VEICULOS
+      Exibe a lista de carros/motos cadastrados e permite a adicao de novos.
+    -->
     <section id="section-veiculos" style="display:none;">
       <h2>Meus Veículos</h2>
+      <!-- Container onde o JS injeta os cards dos veiculos -->
       <div id="lista-veiculos-cards" class="cards-container"></div>
 
+      <!-- Botao que alterna a visibilidade do formulario de cadastro abaixo -->
       <button id="btn-novo-veiculo" class="btn-add-main" onclick="toggleFormVeiculo()">+ Adicionar Novo Veículo</button>
 
+      <!-- Formulario para novo veiculo (oculto por padrao) -->
       <form id="form-veiculo" style="display:none; margin-top: 1.5rem;">
         <input type="text" id="veiculo-nome" placeholder="Ex: Onix 2023 / Honda CB 500" required>
         <input type="text" id="veiculo-placa" placeholder="Placa (opcional)">
@@ -33,15 +43,22 @@
       </form>
     </section>
 
-    <!-- Seção: Cadastro de Entradas -->
+    <!-- 
+      SECAO: REGISTRO DE GASTOS
+      Formulario principal para entrada de dados. Funciona tanto para novos registros 
+      quanto para edicao de registros existentes.
+    -->
     <section id="section-cadastro" style="display:none;">
+      <!-- O span #registro-status recebe a tag "NOVO" ou "EDITANDO" via JS -->
       <h2>Registro de Gasto <span id="registro-status" class="status-badge"></span></h2>
       <form id="form-entrada">
+        <!-- Seleção do veículo: desabilitado se houver apenas um ou se for edicao -->
         <div class="form-group">
           <label>Veículo:</label>
           <select id="entrada-veiculo" onchange="buscarUltimoKm()" required></select>
         </div>
 
+        <!-- Grid de informações gerais (Tipo, Data e KM) -->
         <div class="grid-3">
           <div class="form-group">
             <label>Tipo:</label>
@@ -62,7 +79,10 @@
           </div>
         </div>
 
-        <!-- Campos Dinâmicos: Abastecimento -->
+        <!-- 
+          CAMPOS ESPECIFICOS: ABASTECIMENTO 
+          Exibidos apenas quando o tipo 'abastecimento' esta selecionado.
+        -->
         <div id="campos-abastecimento" class="tipo-especifico">
           <div class="grid-2">
             <input type="text" id="abs-local" placeholder="Posto / Local">
@@ -85,7 +105,10 @@
           </div>
         </div>
 
-        <!-- Campos Dinâmicos: Manutenção -->
+        <!-- 
+          CAMPOS ESPECIFICOS: MANUTENCAO 
+          Exibidos apenas quando o tipo 'manutencao' esta selecionado.
+        -->
         <div id="campos-manutencao" class="tipo-especifico" style="display:none;">
           <input type="text" id="man-local" placeholder="Oficina / Loja">
           <div class="grid-2">
@@ -96,7 +119,10 @@
           </div>
         </div>
 
-        <!-- Campos Dinâmicos: Despesas -->
+        <!-- 
+          CAMPOS ESPECIFICOS: DESPESAS 
+          Exibidos apenas quando o tipo 'despesa' esta selecionado.
+        -->
         <div id="campos-despesa" class="tipo-especifico" style="display:none;">
           <input type="text" id="imp-nome" placeholder="Nome da Despesa (IPVA, Licenciamento, Multa)">
           <div class="grid-2">
@@ -106,20 +132,27 @@
         </div>
 
         <textarea id="entrada-obs" placeholder="Observações adicionais..."></textarea>
+
         <div class="form-actions">
           <button type="button" class="btn-cancel" onclick="cancelEdit()">Cancelar</button>
-          <button type="submit" class="btn-save">Salvar Registro</button>
+          <button type="submit" class="btn-save">Salvar</button>
         </div>
       </form>
     </section>
 
-    <!-- Seção: Lista e Filtros -->
+    <!-- 
+      SECAO: RELATORIOS (HISTORICO)
+      Exibe todos os registros salvos com capacidades de filtragem por veiculo e tipo.
+    -->
     <section id="section-lista" style="display:none;">
       <h2>Histórico de Gastos</h2>
+
+      <!-- Controles de filtragem -->
       <div class="filtros">
         <select id="filtro-veiculo" onchange="renderizarLista()">
           <option value="">Todos os Veículos</option>
         </select>
+        <!-- Toggle buttons para filtro rapido por categoria -->
         <div class="toggle-filtros">
           <button class="filtro-btn active" data-tipo="abastecimento" onclick="toggleFiltro(this)">⛽
             Abastecimento</button>
@@ -127,6 +160,7 @@
           <button class="filtro-btn active" data-tipo="despesa" onclick="toggleFiltro(this)">📜 Despesa</button>
         </div>
       </div>
+      <!-- Container onde o JS injeta os cards expansíveis do historico -->
       <div id="lista-entradas-container" class="lista-entradas">
         <!-- Preenchido via JS -->
       </div>
