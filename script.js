@@ -495,6 +495,64 @@ function salvarESincronizar() {
 }
 
 /**
+ * Exporta os registros de um veículo específico no formato JSON.
+ * @param {number} veiculoId - ID do veículo.
+ */
+function exportarDados(veiculoId) {
+  const veiculo = veiculos.find(v => v.id === veiculoId);
+  if (!veiculo) return;
+
+  const registrosExport = entradas.filter(e => e.veiculoId === veiculoId);
+
+  if (registrosExport.length === 0) {
+    alert('Nenhum registro encontrado para exportar.');
+    return;
+  }
+
+  const conteudo = JSON.stringify({ veiculo, registros: registrosExport }, null, 2);
+  const blob = new Blob([conteudo], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `carlog_${veiculo.nome.replace(/\s+/g, '_').toLowerCase()}.json`;
+  link.click();
+}
+
+/**
+ * Importa um veículo e seus registros a partir de um arquivo JSON.
+ * @param {Event} event - Evento de alteração do input de arquivo.
+ */
+function importarVeiculoJSON(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+
+  const leitor = new FileReader();
+  leitor.onload = function (e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+      if (!dados.veiculo || !dados.registros) throw new Error("Formato inválido");
+
+      const novoVeiculoId = Date.now();
+      const novoVeiculo = { ...dados.veiculo, id: novoVeiculoId };
+
+      const novosRegistros = dados.registros.map(reg => ({
+        ...reg,
+        id: reg.id + Math.floor(Math.random() * 1000), // Evita duplicidade de ID de registro
+        veiculoId: novoVeiculoId
+      }));
+
+      veiculos.push(novoVeiculo);
+      entradas.push(...novosRegistros);
+      salvarESincronizar();
+      alert('Veículo e registros importados com sucesso!');
+    } catch (err) {
+      alert('Erro ao importar arquivo. Certifique-se de que é um JSON válido do CarLog.');
+    }
+  };
+  leitor.readAsText(arquivo);
+  event.target.value = ''; // Limpa o input para permitir re-importação
+}
+
+/**
  * Sincroniza os elementos globais da UI, como os menus de seleção de veículos,
  * os cartões da aba de veículos e o estado dos filtros.
  */
@@ -516,6 +574,9 @@ function atualizarUI() {
             <div class="card-shortcuts">
                 <button onclick="irPararegistros(${v.id})">Registros</button>
                 <button onclick="irParaRelatorios(${v.id})">Relatórios</button>
+            </div>
+            <div class="card-shortcuts" style="justify-content: center;">
+                <button onclick="exportarDados(${v.id})">Exportar JSON</button>
             </div>
             <button class="btn-del" onclick="deleteVeiculo(${v.id})">Excluir Veículo</button>
         </div>

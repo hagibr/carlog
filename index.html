@@ -42,6 +42,11 @@
       <!-- Botao que alterna a visibilidade do formulario de cadastro abaixo -->
       <button id="btn-novo-veiculo" class="btn-add-main" onclick="toggleFormVeiculo()">+ Adicionar Novo Veículo</button>
 
+      <!-- Botão para disparar a importação de arquivo JSON -->
+      <button class="btn-add-main" onclick="document.getElementById('file-import').click()"
+        style="margin-top: 0.5rem; border-style: solid;">📥 Importar Veículo (JSON)</button>
+      <input type="file" id="file-import" style="display:none" onchange="importarVeiculoJSON(event)" accept=".json">
+
       <!-- Formulario para novo veiculo (oculto por padrao) -->
       <form id="form-veiculo" style="display:none; margin-top: 1.5rem;">
         <input type="text" id="veiculo-nome" placeholder="Ex: Onix 2023 / Honda CB 500" required>
