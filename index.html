@@ -159,6 +159,12 @@
           <button class="filtro-btn active" data-tipo="manutencao" onclick="toggleFiltro(this)">🔧 Manutenção</button>
           <button class="filtro-btn active" data-tipo="despesa" onclick="toggleFiltro(this)">📜 Despesa</button>
         </div>
+        <div class="filtro-datas">
+          <input type="date" id="filtro-data-inicio" onchange="renderizarLista()" title="Data Inicial">
+          <span>até</span>
+          <input type="date" id="filtro-data-fim" onchange="renderizarLista()" title="Data Final">
+          <button type="button" onclick="resetarFiltros()">Limpar</button>
+        </div>
       </div>
       <!-- Container onde o JS injeta os cards expansíveis do historico -->
       <div id="lista-entradas-container" class="lista-entradas">

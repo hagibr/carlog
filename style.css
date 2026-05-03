@@ -234,6 +234,7 @@ form {
   gap: 1rem;
   margin-bottom: 1.5rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .toggle-filtros {
@@ -256,6 +257,23 @@ form {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+}
+
+.filtro-datas {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filtro-datas input {
+  padding: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.filtro-datas span {
+  font-size: 0.85rem;
+  color: var(--secondary);
 }
 
 .lista-entradas {

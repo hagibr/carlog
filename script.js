@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-entrada').onsubmit = addEntrada;
 
   if (veiculos.length > 0) {
+    inicializarDatasFiltro();
     showSection('section-cadastro');
   } else {
     showSection('section-veiculos');
@@ -136,6 +137,35 @@ function irPararegistros(veiculoId) {
 function irParaRelatorios(veiculoId) {
   showSection('section-lista');
   document.getElementById('filtro-veiculo').value = veiculoId;
+  renderizarLista();
+}
+
+/**
+ * Inicializa os campos de filtro de data com o registro mais antigo e o mais novo.
+ */
+function inicializarDatasFiltro() {
+  const inicioInput = document.getElementById('filtro-data-inicio');
+  const fimInput = document.getElementById('filtro-data-fim');
+
+  if (entradas.length === 0) {
+    inicioInput.value = "";
+    fimInput.value = "";
+    return;
+  }
+
+  const datas = entradas.map(e => e.data).sort();
+  inicioInput.value = datas[0];
+  fimInput.value = datas[datas.length - 1];
+}
+
+/**
+ * Reseta todos os filtros do histórico para o estado inicial.
+ */
+function resetarFiltros() {
+  document.getElementById('filtro-veiculo').value = "";
+  filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
+  document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.add('active'));
+  inicializarDatasFiltro();
   renderizarLista();
 }
 
@@ -417,11 +447,14 @@ function atualizarUI() {
  */
 function renderizarLista() {
   const fVeiculo = document.getElementById('filtro-veiculo').value;
+  const dInicio = document.getElementById('filtro-data-inicio').value;
+  const dFim = document.getElementById('filtro-data-fim').value;
 
   const filtrados = entradas.filter(e => {
     const matchVeiculo = fVeiculo ? e.veiculoId == fVeiculo : true;
     const matchTipo = filtrosAtivos.includes(e.tipo);
-    return matchVeiculo && matchTipo;
+    const matchData = (!dInicio || e.data >= dInicio) && (!dFim || e.data <= dFim);
+    return matchVeiculo && matchTipo && matchData;
   }).sort((a, b) => {
     if (a.data !== b.data) return b.data.localeCompare(a.data);
     return b.km - a.km;
