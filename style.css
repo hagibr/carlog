@@ -37,6 +37,12 @@ nav {
   font-size: 1.5rem;
 }
 
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 nav button {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -46,6 +52,15 @@ nav button {
 
 nav button:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+#auth-container {
+  margin-left: 0.5rem;
+}
+
+#user-info {
+  align-items: center;
+  gap: 0.5rem;
 }
 
 #user-info span {

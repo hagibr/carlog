@@ -19,9 +19,10 @@
       <button onclick="showSection('section-veiculos')">Veículos</button>
       <button onclick="showSection('section-cadastro')">Registros</button>
       <button onclick="showSection('section-lista')">Relatórios</button>
-      <div id="auth-container" style="display: inline-block; margin-left: 1rem;">
+      <div id="auth-container">
         <button id="btn-login" onclick="loginGoogle()">Login Google</button>
-        <div id="user-info" style="display: none; align-items: center; gap: 0.5rem;">
+        <div id="user-info" style="display: none;">
+          <button id="btn-sync" onclick="sincronizarComNuvem(true)">Sincronizar</button>
           <img id="user-photo" src="" style="width: 30px; border-radius: 50%;">
           <button onclick="logout()">Sair</button>
         </div>

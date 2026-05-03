@@ -86,15 +86,23 @@ function gerenciarUIAuntenticacao(user) {
 
 /**
  * Baixa os dados da nuvem se o usuário estiver logado.
+ * @param {boolean} manual - Indica se a sincronização foi disparada manualmente pelo usuário.
  */
-async function sincronizarComNuvem() {
+async function sincronizarComNuvem(manual = false) {
   if (!usuarioAtual) return;
+  if (manual) document.getElementById('btn-sync').textContent = 'Sincronizando...';
+
   const doc = await db.collection('carlog').doc(usuarioAtual.uid).get();
   if (doc.exists) {
     const data = doc.data();
     veiculos = data.veiculos || [];
     entradas = data.entradas || [];
     salvarESincronizar(); // Atualiza localmente e renderiza
+  }
+
+  if (manual) {
+    document.getElementById('btn-sync').textContent = 'Sincronizar';
+    alert('Dados sincronizados com a nuvem!');
   }
 }
 
@@ -268,6 +276,8 @@ function buscarUltimoKm() {
   if (anteriores.length > 0) {
     anteriores.sort((a, b) => a.data !== b.data ? b.data.localeCompare(a.data) : b.km - a.km);
     kmInput.value = formatar(anteriores[0].km, 0);
+  } else {
+    kmInput.value = "";
   }
 }
 
@@ -425,6 +435,9 @@ function addEntrada(e) {
   const tipo = document.getElementById('entrada-tipo').value;
   let valorFinal = 0;
 
+  // Captura o ID do veículo selecionado antes do reset do formulário
+  const currentSelectedVeiculoId = parseInt(document.getElementById('entrada-veiculo').value);
+
   const entrada = {
     id: Date.now(),
     veiculoId: parseInt(document.getElementById('entrada-veiculo').value),
@@ -473,6 +486,19 @@ function addEntrada(e) {
 
   salvarESincronizar();
   e.target.reset();
+
+  // Re-seleciona o veículo que estava ativo antes do reset
+  const veiculoSelect = document.getElementById('entrada-veiculo');
+  veiculoSelect.value = currentSelectedVeiculoId;
+
+  // Garante que o tipo de campo correto (Abastecimento) seja exibido após o reset do formulário
+  toggleTipoCampos();
+
+  // Restaura a data para hoje (o reset a limpa)
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('entrada-data').value = hoje;
+
+  buscarUltimoKm(); // Atualiza o KM sugerido para o veículo re-selecionado
   alert(isEdit ? 'Registro atualizado com sucesso!' : 'Entrada salva com sucesso!');
 }
 
@@ -558,14 +584,24 @@ function importarVeiculoJSON(event) {
  */
 function atualizarUI() {
   // Atualizar selects de veículos
-  const selects = [document.getElementById('entrada-veiculo'), document.getElementById('filtro-veiculo')];
+  const vSelect = document.getElementById('entrada-veiculo');
+  const fSelect = document.getElementById('filtro-veiculo');
+
+  // Salva os valores atuais para não resetar a seleção do usuário durante a reconstrução
+  const currentV = vSelect.value;
+  const currentF = fSelect.value;
+
   const options = veiculos.map(v => `<option value="${v.id}">${v.nome} ${v.placa ? `(${v.placa})` : ''}</option>`).join('');
 
-  selects[0].innerHTML = options;
-  selects[1].innerHTML = (veiculos.length > 1 ? '<option value="">Todos os Veículos</option>' : '') + options;
+  vSelect.innerHTML = options;
+  fSelect.innerHTML = (veiculos.length > 1 ? '<option value="">Todos os Veículos</option>' : '') + options;
 
-  selects[0].disabled = editandoId !== null || veiculos.length <= 1;
-  selects[1].disabled = veiculos.length <= 1;
+  // Restaura a seleção se ela ainda existir nas novas opções
+  if (currentV) vSelect.value = currentV;
+  if (currentF) fSelect.value = currentF;
+
+  vSelect.disabled = editandoId !== null || veiculos.length <= 1;
+  fSelect.disabled = veiculos.length <= 1;
 
   // Renderizar Cards de Veículos
   document.getElementById('lista-veiculos-cards').innerHTML = veiculos.map(v => `
