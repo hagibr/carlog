@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarLog - Gestão de Veículos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <nav>
+    <div class="logo">CarLog</div>
+    <div class="menu">
+      <button onclick="showSection('section-veiculos')">Veículos</button>
+      <button onclick="showSection('section-cadastro')">Registros</button>
+      <button onclick="showSection('section-lista')">Relatórios</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Seção: Cadastro de Veículos -->
+    <section id="section-veiculos" style="display:none;">
+      <h2>Meus Veículos</h2>
+      <div id="lista-veiculos-cards" class="cards-container"></div>
+
+      <button id="btn-novo-veiculo" class="btn-add-main" onclick="toggleFormVeiculo()">+ Adicionar Novo Veículo</button>
+
+      <form id="form-veiculo" style="display:none; margin-top: 1.5rem;">
+        <input type="text" id="veiculo-nome" placeholder="Ex: Onix 2023 / Honda CB 500" required>
+        <input type="text" id="veiculo-placa" placeholder="Placa (opcional)">
+        <button type="submit">Adicionar Veículo</button>
+      </form>
+    </section>
+
+    <!-- Seção: Cadastro de Entradas -->
+    <section id="section-cadastro" style="display:none;">
+      <h2>Registro de Gasto <span id="registro-status" class="status-badge"></span></h2>
+      <form id="form-entrada">
+        <div class="form-group">
+          <label>Veículo:</label>
+          <select id="entrada-veiculo" onchange="buscarUltimoKm()" required></select>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Tipo:</label>
+            <select id="entrada-tipo" onchange="toggleTipoCampos()">
+              <option value="abastecimento">Abastecimento</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="imposto">Imposto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Data/Hora:</label>
+            <input type="date" id="entrada-data" onchange="buscarUltimoKm()" required>
+          </div>
+          <div class="form-group">
+            <label>KM Atual:</label>
+            <input type="text" id="entrada-km" placeholder="0" inputmode="numeric" oninput="aplicarMascara(this, 0)"
+              required>
+          </div>
+        </div>
+
+        <!-- Campos Dinâmicos: Abastecimento -->
+        <div id="campos-abastecimento" class="tipo-especifico">
+          <div class="grid-2">
+            <input type="text" id="abs-local" placeholder="Posto / Local">
+            <select id="abs-combustivel">
+              <option value="" disabled selected>Tipo de Combustível</option>
+              <option value="Etanol">Etanol</option>
+              <option value="Etanol Aditivado">Etanol Aditivado</option>
+              <option value="Gasolina">Gasolina</option>
+              <option value="Gasolina Aditivada">Gasolina Aditivada</option>
+              <option value="Diesel">Diesel</option>
+            </select>
+          </div>
+          <div class="grid-3">
+            <input type="text" id="abs-litros" placeholder="Litros" inputmode="numeric"
+              oninput="aplicarMascara(this, 3); calcAbastecimento('litros')">
+            <input type="text" id="abs-preco-litro" placeholder="Preço por Litro" inputmode="numeric"
+              oninput="aplicarMascara(this, 2); calcAbastecimento('preco')">
+            <input type="text" id="abs-total" placeholder="Preço Total" inputmode="numeric"
+              oninput="aplicarMascara(this, 2); calcAbastecimento('total')">
+          </div>
+        </div>
+
+        <!-- Campos Dinâmicos: Manutenção -->
+        <div id="campos-manutencao" class="tipo-especifico" style="display:none;">
+          <input type="text" id="man-local" placeholder="Oficina / Loja">
+          <div class="grid-2">
+            <input type="text" id="man-pecas" placeholder="Valor Peças" inputmode="numeric"
+              oninput="aplicarMascara(this, 2)">
+            <input type="text" id="man-mao-obra" placeholder="Mão de Obra" inputmode="numeric"
+              oninput="aplicarMascara(this, 2)">
+          </div>
+        </div>
+
+        <!-- Campos Dinâmicos: Impostos -->
+        <div id="campos-imposto" class="tipo-especifico" style="display:none;">
+          <input type="text" id="imp-nome" placeholder="Nome do Imposto (IPVA, Licenciamento)">
+          <div class="grid-2">
+            <input type="text" id="imp-valor" placeholder="Valor" inputmode="numeric" oninput="aplicarMascara(this, 2)">
+            <input type="date" id="imp-referencia" title="Data de Referência">
+          </div>
+        </div>
+
+        <textarea id="entrada-obs" placeholder="Observações adicionais..."></textarea>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="cancelEdit()">Cancelar</button>
+          <button type="submit" class="btn-save">Salvar Registro</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Seção: Lista e Filtros -->
+    <section id="section-lista" style="display:none;">
+      <h2>Histórico de Gastos</h2>
+      <div class="filtros">
+        <select id="filtro-veiculo" onchange="renderizarLista()">
+          <option value="">Todos os Veículos</option>
+        </select>
+        <div class="toggle-filtros">
+          <button class="filtro-btn active" data-tipo="abastecimento" onclick="toggleFiltro(this)">⛽
+            Abastecimento</button>
+          <button class="filtro-btn active" data-tipo="manutencao" onclick="toggleFiltro(this)">🔧 Manutenção</button>
+          <button class="filtro-btn active" data-tipo="imposto" onclick="toggleFiltro(this)">📜 Imposto</button>
+        </div>
+      </div>
+      <div id="lista-entradas-container" class="lista-entradas">
+        <!-- Preenchido via JS -->
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
