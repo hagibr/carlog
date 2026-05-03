@@ -20,6 +20,10 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -82,8 +86,24 @@ textarea {
 
 .grid-3 {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1.5fr 1fr;
   gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  white-space: nowrap;
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
 }
 
 .btn-save {
@@ -301,6 +321,11 @@ textarea {
   .grid-2,
   .grid-3 {
     grid-template-columns: 1fr;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   section {
