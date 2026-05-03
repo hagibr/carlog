@@ -19,6 +19,13 @@
       <button onclick="showSection('section-veiculos')">Veículos</button>
       <button onclick="showSection('section-cadastro')">Registros</button>
       <button onclick="showSection('section-lista')">Relatórios</button>
+      <div id="auth-container" style="display: inline-block; margin-left: 1rem;">
+        <button id="btn-login" onclick="loginGoogle()">Login Google</button>
+        <div id="user-info" style="display: none; align-items: center; gap: 0.5rem;">
+          <img id="user-photo" src="" style="width: 30px; border-radius: 50%;">
+          <button onclick="logout()">Sair</button>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -172,6 +179,11 @@
       </div>
     </section>
   </main>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script src="script.js"></script>
 </body>

@@ -41,10 +41,16 @@ nav button {
   background: rgba(255, 255, 255, 0.1);
   color: white;
   margin-left: 0.5rem;
+  font-size: 0.85rem;
 }
 
 nav button:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+#user-info span {
+  font-size: 0.8rem;
+  color: white;
 }
 
 main {

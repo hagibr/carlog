@@ -1,8 +1,27 @@
+// Configuração do Firebase (Substitua pelos seus dados do console)
+const firebaseConfig = {
+  apiKey: "AIzaSyCf9dOhNw-uB_5vp1z8U0MVfLbtjCV1N54",
+  authDomain: "carlog-5be41.firebaseapp.com",
+  projectId: "carlog-5be41",
+  storageBucket: "carlog-5be41.firebasestorage.app",
+  messagingSenderId: "349944380532",
+  appId: "1:349944380532:web:a726794cf6125c16e52521",
+  measurementId: "G-2GBYV5CSX2"
+};
+
+
+
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 // Estado da Aplicação
 let veiculos = JSON.parse(localStorage.getItem('veiculos')) || [];
 let entradas = JSON.parse(localStorage.getItem('entradas')) || [];
 let editandoId = null;
 let filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
+let usuarioAtual = null;
 
 // Inicialização
 /**
@@ -13,6 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-veiculo').onsubmit = addVeiculo;
   document.getElementById('form-entrada').onsubmit = addEntrada;
 
+  // Listener de Autenticação
+  auth.onAuthStateChanged(user => {
+    usuarioAtual = user;
+    gerenciarUIAuntenticacao(user);
+    if (user) {
+      sincronizarComNuvem();
+    }
+  });
+
   if (veiculos.length > 0) {
     inicializarDatasFiltro();
     showSection('section-cadastro');
@@ -20,6 +48,55 @@ document.addEventListener('DOMContentLoaded', () => {
     showSection('section-veiculos');
   }
 });
+
+// Funções de Autenticação
+/**
+ * Inicia o fluxo de login com o Google.
+ */
+function loginGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
+}
+
+/**
+ * Faz o logout do usuário.
+ */
+function logout() {
+  auth.signOut();
+  location.reload(); // Recarrega para limpar estado e voltar ao local
+}
+
+/**
+ * Atualiza os elementos de UI baseados no login.
+ */
+function gerenciarUIAuntenticacao(user) {
+  const btnLogin = document.getElementById('btn-login');
+  const userInfo = document.getElementById('user-info');
+  const userPhoto = document.getElementById('user-photo');
+
+  if (user) {
+    btnLogin.style.display = 'none';
+    userInfo.style.display = 'flex';
+    userPhoto.src = user.photoURL;
+  } else {
+    btnLogin.style.display = 'block';
+    userInfo.style.display = 'none';
+  }
+}
+
+/**
+ * Baixa os dados da nuvem se o usuário estiver logado.
+ */
+async function sincronizarComNuvem() {
+  if (!usuarioAtual) return;
+  const doc = await db.collection('carlog').doc(usuarioAtual.uid).get();
+  if (doc.exists) {
+    const data = doc.data();
+    veiculos = data.veiculos || [];
+    entradas = data.entradas || [];
+    salvarESincronizar(); // Atualiza localmente e renderiza
+  }
+}
 
 // Navegação Simples
 /**
@@ -407,6 +484,13 @@ function addEntrada(e) {
 function salvarESincronizar() {
   localStorage.setItem('veiculos', JSON.stringify(veiculos));
   localStorage.setItem('entradas', JSON.stringify(entradas));
+
+  // Se logado, envia para o Firestore
+  if (usuarioAtual) {
+    db.collection('carlog').doc(usuarioAtual.uid).set({
+      veiculos, entradas, ultimaSinc: new Date().toISOString()
+    }).catch(err => console.error("Erro ao sincronizar nuvem:", err));
+  }
   atualizarUI();
 }
 
