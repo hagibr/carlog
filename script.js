@@ -754,7 +754,8 @@ function renderizarLista() {
     return matchVeiculo && matchTipo && matchData;
   }).sort((a, b) => {
     if (a.data !== b.data) return b.data.localeCompare(a.data);
-    return b.km - a.km;
+    if (a.km !== b.km) return b.km - a.km;
+    return b.id - a.id;
   });
 
   const container = document.getElementById('lista-entradas-container');
