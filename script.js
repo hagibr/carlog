@@ -318,14 +318,15 @@ function inicializarDatasFiltro() {
   const inicioInput = document.getElementById('filtro-data-inicio');
   const fimInput = document.getElementById('filtro-data-fim');
 
-  const entradasAtivas = entradas.filter(e => !e.excluido);
-  if (entradasAtivas.length === 0) {
+  // Consideramos todos os registros (incluindo excluídos) para definir o limite do calendário.
+  // Isso evita que registros na lixeira fiquem "escondidos" fora do intervalo automático.
+  if (entradas.length === 0) {
     inicioInput.value = "";
     fimInput.value = "";
     return;
   }
 
-  const datas = entradasAtivas.map(e => e.data).sort();
+  const datas = entradas.map(e => e.data).sort();
   inicioInput.value = datas[0];
   fimInput.value = datas[datas.length - 1];
 }
