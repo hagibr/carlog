@@ -264,7 +264,9 @@ function inicializarDatasFiltro() {
  * Reseta todos os filtros do histórico para o estado inicial.
  */
 function resetarFiltros() {
-  document.getElementById('filtro-veiculo').value = "";
+  if (veiculos.length > 1) {
+    document.getElementById('filtro-veiculo').value = "";
+  }
   filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
   document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.add('active'));
   inicializarDatasFiltro();
@@ -652,7 +654,7 @@ function atualizarUI() {
   // Renderizar Cards de Veículos
   document.getElementById('lista-veiculos-cards').innerHTML = veiculos.map(v => `
         <div class="card-veiculo">
-            <strong>${v.nome}</strong><br><small>${v.placa}</small>
+            <strong>${v.nome}${v.placa ? ` (${v.placa})` : ''}</strong>
             <div class="card-shortcuts">
                 <button onclick="irPararegistros(${v.id})">Registros</button>
                 <button onclick="irParaRelatorios(${v.id})">Relatórios</button>
