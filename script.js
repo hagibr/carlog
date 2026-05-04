@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-veiculo').onsubmit = addVeiculo;
   document.getElementById('form-entrada').onsubmit = addEntrada;
 
+  // Inicializa o tema salvo no localStorage
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('btn-theme-toggle').textContent = '☀️';
+  }
+
   // Listener de Autenticação
   auth.onAuthStateChanged(user => {
     usuarioAtual = user;
@@ -105,6 +112,15 @@ async function sincronizarComNuvem(manual = false) {
     document.getElementById('btn-sync').textContent = 'Sincronizar';
     alert('Dados sincronizados com a nuvem!');
   }
+}
+
+/**
+ * Alterna entre modo claro e modo escuro e salva a preferência.
+ */
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('btn-theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 // Navegação Simples

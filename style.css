@@ -7,6 +7,19 @@
   --bg: #f8fafc;
   --card: #ffffff;
   --text: #1e293b;
+  --border: #e2e8f0;
+  --input-border: #cbd5e1;
+  --btn-bg: #e2e8f0;
+}
+
+body.dark-mode {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --secondary: #94a3b8;
+  --border: #334155;
+  --input-border: #475569;
+  --btn-bg: #334155;
 }
 
 body {
@@ -35,6 +48,20 @@ nav {
 .logo {
   font-weight: bold;
   font-size: 1.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+#btn-theme-toggle {
+  width: 42px;
+  flex: none !important;
+  /* Impede que o botão expanda no flexbox */
+  margin-left: 0.75rem;
+  display: flex;
+  justify-content: center;
 }
 
 .menu {
@@ -89,7 +116,8 @@ button {
   padding: 0.6rem 1rem;
   border: none;
   border-radius: 4px;
-  background: #e2e8f0;
+  background: var(--btn-bg);
+  color: var(--text);
   transition: 0.2s;
 }
 
@@ -97,9 +125,11 @@ input,
 select,
 textarea {
   padding: 0.8rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 1rem;
+  background: var(--card);
+  color: var(--text);
 }
 
 form {
@@ -167,7 +197,7 @@ form {
 }
 
 .card-veiculo {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   padding: 1rem;
   border-radius: 8px;
   display: flex;
@@ -185,9 +215,9 @@ form {
   flex: 1;
   font-size: 0.75rem;
   padding: 0.4rem;
-  background: #f1f5f9;
+  background: var(--bg);
   color: var(--primary);
-  border: 1px solid var(--primary);
+  border: 1px solid var(--border);
 }
 
 .card-shortcuts button:hover {
@@ -199,7 +229,7 @@ form {
   width: 100%;
   margin-top: 1.5rem;
   padding: 1rem;
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--input-border);
   background: none;
   color: var(--secondary);
   font-weight: bold;
@@ -259,6 +289,16 @@ form {
   color: #854d0e;
 }
 
+body.dark-mode .status-badge {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark-mode .status-badge.edit {
+  background: #713f12;
+  color: #fef08a;
+}
+
 /* ==========================================================================
    6. SEÇÃO DE RELATÓRIOS (CARDS EXPANSÍVEIS)
    ========================================================================== */
@@ -278,8 +318,8 @@ form {
 
 .filtro-btn {
   font-size: 0.85rem;
-  border: 1px solid #cbd5e1;
-  background: white;
+  border: 1px solid var(--input-border);
+  background: var(--card);
   color: var(--secondary);
   opacity: 0.6;
   padding: 0.5rem 0.8rem;
@@ -316,9 +356,9 @@ form {
 }
 
 .entrada-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: white;
+  background: var(--card);
   overflow: hidden;
 }
 
@@ -358,8 +398,8 @@ form {
 .entrada-detalhes {
   display: none;
   padding: 1rem;
-  background: #f8fafc;
-  border-top: 1px solid #f1f5f9;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
 }
 
 .detalhes-grid {

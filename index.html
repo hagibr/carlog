@@ -14,7 +14,10 @@
     Mantem-se fixo no topo (sticky) para facilitar a alternancia entre as seções.
   -->
   <nav>
-    <div class="logo">CarLog</div>
+    <div class="brand">
+      <div class="logo">CarLog</div>
+      <button id="btn-theme-toggle" onclick="toggleTheme()" title="Alternar Tema">🌙</button>
+    </div>
     <div class="menu">
       <button onclick="showSection('section-veiculos')">Veículos</button>
       <button onclick="showSection('section-cadastro')">Registros</button>
