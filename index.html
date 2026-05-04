@@ -20,7 +20,7 @@
     </div>
     <div class="menu">
       <button onclick="showSection('section-veiculos')">Veículos</button>
-      <button onclick="showSection('section-cadastro')">Registros</button>
+      <button onclick="showSection('section-registro')">Registros</button>
       <button onclick="showSection('section-lista')">Relatórios</button>
       <div id="auth-container">
         <button id="btn-login" onclick="loginGoogle()">Login Google</button>
@@ -46,7 +46,7 @@
       <input type="file" id="file-import" style="display:none" onchange="importarVeiculoJSON(event)" accept=".json">
 
       <!-- Formulario para novo veiculo (oculto por padrao) -->
-      <form id="form-veiculo" style="display:none; margin-top: 1.5rem;">
+      <form id="form-novo-veiculo" style="display:none; margin-top: 1.5rem;">
         <strong style="color: var(--primary); font-size: 1.1rem;">Adicionar Novo Veículo</strong>
         <input type="text" id="veiculo-nome" placeholder="Ex: Onix 2023 / Honda CB 500" required>
         <input type="text" id="veiculo-placa" placeholder="Placa (opcional)">
@@ -62,7 +62,7 @@
       Formulario principal para entrada de dados. Funciona tanto para novos registros 
       quanto para edicao de registros existentes.
     -->
-    <section id="section-cadastro" style="display:none;">
+    <section id="section-registro" style="display:none;">
       <!-- O span #registro-status recebe a tag "NOVO" ou "EDITANDO" via JS -->
       <h2>Registro de Gasto <span id="registro-status" class="status-badge"></span></h2>
       <form id="form-entrada">

@@ -29,7 +29,7 @@ let usuarioAtual = null;
  * e decide qual seção exibir com base na existência de veículos.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('form-veiculo').onsubmit = addVeiculo;
+  document.getElementById('form-novo-veiculo').onsubmit = addVeiculo;
   document.getElementById('form-entrada').onsubmit = addEntrada;
 
   // Inicializa o tema salvo no localStorage
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (veiculos.length > 0) {
     inicializarDatasFiltro();
-    showSection('section-cadastro');
+    showSection('section-registro');
   } else {
     showSection('section-veiculos');
   }
@@ -130,7 +130,7 @@ function toggleTheme() {
  * @param {string} id - O ID da seção a ser exibida.
  */
 function showSection(id) {
-  if (id === 'section-cadastro') {
+  if (id === 'section-registro') {
     const statusEl = document.getElementById('registro-status');
     const veiculoSelect = document.getElementById('entrada-veiculo');
     const tipoSelect = document.getElementById('entrada-tipo');
@@ -180,7 +180,7 @@ function cancelEdit() {
  * Alterna a visibilidade do formulário de cadastro de novo veículo.
  */
 function toggleFormVeiculo() {
-  const form = document.getElementById('form-veiculo');
+  const form = document.getElementById('form-novo-veiculo');
   const cards = document.getElementById('lista-veiculos-cards');
   if (form.style.display === 'none') {
     form.style.display = 'flex';
@@ -248,7 +248,7 @@ function deleteVeiculo(id) {
  */
 function irPararegistros(veiculoId) {
   cancelEdit(); // Garante que o formulário esteja limpo e em modo "Novo"
-  showSection('section-cadastro');
+  showSection('section-registro');
   document.getElementById('entrada-veiculo').value = veiculoId;
 }
 
@@ -460,7 +460,7 @@ function editEntrada(id) {
   if (!entrada) return;
 
   editandoId = id;
-  showSection('section-cadastro');
+  showSection('section-registro');
 
   document.getElementById('entrada-veiculo').value = entrada.veiculoId;
   document.getElementById('entrada-tipo').value = entrada.tipo;
