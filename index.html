@@ -26,6 +26,8 @@
         <button id="btn-login" onclick="loginGoogle()">Login Google</button>
         <div id="user-info" style="display: none;">
           <button id="btn-sync" onclick="sincronizarComNuvem(true)">Sincronizar</button>
+          <button id="btn-purge" onclick="purgarRegistrosExcluidos()"
+            title="Limpar registros excluídos permanentemente">🧹</button>
           <img id="user-photo" src="" style="width: 30px; border-radius: 50%;">
           <button onclick="logout()">Sair</button>
         </div>
@@ -178,6 +180,7 @@
             Abastecimento</button>
           <button class="filtro-btn active" data-tipo="manutencao" onclick="toggleFiltro(this)">🔧 Manutenção</button>
           <button class="filtro-btn active" data-tipo="despesa" onclick="toggleFiltro(this)">📜 Despesa</button>
+          <button class="filtro-btn" data-tipo="excluido" onclick="toggleFiltro(this)">🗑️ Lixeira</button>
         </div>
         <div class="filtro-datas">
           <input type="date" id="filtro-data-inicio" onchange="renderizarLista()" title="Data Inicial">

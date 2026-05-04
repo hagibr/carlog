@@ -138,8 +138,14 @@ function mesclarArraysPorId(local, remoto) {
   const mapa = new Map();
   // Adiciona itens locais primeiro
   local.forEach(item => mapa.set(item.id, item));
-  // Adiciona/Sobrescreve com itens remotos (considerados versão mais atual para conflitos no mesmo ID)
-  remoto.forEach(item => mapa.set(item.id, item));
+  // Mescla com itens remotos baseando-se no timestamp de atualização
+  remoto.forEach(itemRemoto => {
+    const itemLocal = mapa.get(itemRemoto.id);
+    // Se o item não existe localmente ou o remoto é mais recente, atualiza o estado local
+    if (!itemLocal || (itemRemoto.atualizadoEm || 0) > (itemLocal.atualizadoEm || 0)) {
+      mapa.set(itemRemoto.id, itemRemoto);
+    }
+  });
   return Array.from(mapa.values());
 }
 
@@ -229,13 +235,23 @@ function moverVeiculo(id, direcao) {
   const index = veiculos.findIndex(v => v.id === id);
   if (index === -1) return;
 
-  const novoIndex = index + direcao;
+  // Encontra o próximo índice de um veículo não excluído naquela direção
+  let novoIndex = index + direcao;
+  while (novoIndex >= 0 && novoIndex < veiculos.length && veiculos[novoIndex].excluido) {
+    novoIndex += direcao;
+  }
+
   if (novoIndex < 0 || novoIndex >= veiculos.length) return;
 
   // Troca as posições no array
   const temp = veiculos[index];
   veiculos[index] = veiculos[novoIndex];
   veiculos[novoIndex] = temp;
+
+  // Atualiza o timestamp para que a nova ordem seja refletida no merge entre dispositivos
+  const agora = Date.now();
+  veiculos[index].atualizadoEm = agora;
+  veiculos[novoIndex].atualizadoEm = agora;
 
   salvarESincronizar();
 }
@@ -247,8 +263,10 @@ function moverVeiculo(id, direcao) {
  */
 function addVeiculo(e) {
   e.preventDefault();
+  const agora = Date.now();
   const veiculo = {
-    id: Date.now(),
+    id: agora,
+    atualizadoEm: agora,
     nome: document.getElementById('veiculo-nome').value,
     placa: document.getElementById('veiculo-placa').value
   };
@@ -265,8 +283,10 @@ function addVeiculo(e) {
  */
 function deleteVeiculo(id) {
   if (confirm('Tem certeza que deseja excluir este veículo? Todas as entradas de gastos associadas a ele também serão apagadas permanentemente.')) {
-    veiculos = veiculos.filter(v => v.id !== id);
-    entradas = entradas.filter(e => e.veiculoId !== id); // Cascata
+    const agora = Date.now();
+    // Marcar como excluído em vez de remover para sincronizar a deleção
+    veiculos = veiculos.map(v => v.id === id ? { ...v, excluido: true, atualizadoEm: agora } : v);
+    entradas = entradas.map(e => e.veiculoId === id ? { ...e, excluido: true, atualizadoEm: agora } : e);
     salvarESincronizar();
   }
 }
@@ -298,13 +318,14 @@ function inicializarDatasFiltro() {
   const inicioInput = document.getElementById('filtro-data-inicio');
   const fimInput = document.getElementById('filtro-data-fim');
 
-  if (entradas.length === 0) {
+  const entradasAtivas = entradas.filter(e => !e.excluido);
+  if (entradasAtivas.length === 0) {
     inicioInput.value = "";
     fimInput.value = "";
     return;
   }
 
-  const datas = entradas.map(e => e.data).sort();
+  const datas = entradasAtivas.map(e => e.data).sort();
   inicioInput.value = datas[0];
   fimInput.value = datas[datas.length - 1];
 }
@@ -317,7 +338,13 @@ function resetarFiltros() {
     document.getElementById('filtro-veiculo').value = "";
   }
   filtrosAtivos = ['abastecimento', 'manutencao', 'despesa'];
-  document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.add('active'));
+  document.querySelectorAll('.filtro-btn').forEach(btn => {
+    if (btn.dataset.tipo === 'excluido') {
+      btn.classList.remove('active');
+    } else {
+      btn.classList.add('active');
+    }
+  });
   inicializarDatasFiltro();
   renderizarLista();
 }
@@ -348,6 +375,7 @@ function buscarUltimoKm() {
 
   // Busca registros de abastecimento ou manutenção anteriores para as dicas
   const anteriores = entradas.filter(e =>
+    !e.excluido &&
     e.veiculoId === veiculoId &&
     e.data <= dataSelecionada &&
     (e.tipo === 'abastecimento' || e.tipo === 'manutencao')
@@ -532,13 +560,15 @@ function addEntrada(e) {
   const currentSelectedVeiculoId = parseInt(document.getElementById('entrada-veiculo').value);
   const currentSelectedTipo = tipo;
 
+  const agora = Date.now();
   const entrada = {
-    id: Date.now(),
+    id: agora,
+    atualizadoEm: agora,
     veiculoId: parseInt(document.getElementById('entrada-veiculo').value),
     tipo: tipo,
     data: document.getElementById('entrada-data').value,
     km: parseFormattedFloat(document.getElementById('entrada-km').value),
-    obs: document.getElementById('entrada-obs').value,
+    obs: document.getElementById('entrada-obs').value
   };
 
   // Campos específicos e cálculo de valor total por tipo
@@ -655,12 +685,15 @@ function importarVeiculoJSON(event) {
       if (!dados.veiculo || !dados.registros) throw new Error("Formato inválido");
 
       const novoVeiculoId = Date.now();
-      const novoVeiculo = { ...dados.veiculo, id: novoVeiculoId };
+      const agora = Date.now();
+      const novoVeiculo = { ...dados.veiculo, id: novoVeiculoId, atualizadoEm: agora, excluido: false };
 
       const novosRegistros = dados.registros.map(reg => ({
         ...reg,
         id: reg.id + Math.floor(Math.random() * 1000), // Evita duplicidade de ID de registro
-        veiculoId: novoVeiculoId
+        veiculoId: novoVeiculoId,
+        atualizadoEm: agora,
+        excluido: false
       }));
 
       veiculos.push(novoVeiculo);
@@ -691,7 +724,9 @@ function atualizarUI() {
   const currentV = vSelect.value;
   const currentF = fSelect.value;
 
-  const options = veiculos.map(v => `<option value="${v.id}">${v.nome} ${v.placa ? `(${v.placa})` : ''}</option>`).join('');
+  const veiculosAtivos = veiculos.filter(v => !v.excluido);
+
+  const options = veiculosAtivos.map(v => `<option value="${v.id}">${v.nome} ${v.placa ? `(${v.placa})` : ''}</option>`).join('');
 
   vSelect.innerHTML = options;
   fSelect.innerHTML = (veiculos.length > 1 ? '<option value="">Todos os Veículos</option>' : '') + options;
@@ -714,11 +749,11 @@ function atualizarUI() {
   `;
 
   // Renderizar Cards de Veículos
-  const veiculosHtml = veiculos.map((v, index) => `
+  const veiculosHtml = veiculosAtivos.map((v, index) => `
         <div class="card-veiculo">
             <div class="card-reorder">
                 <button onclick="moverVeiculo(${v.id}, -1)" ${index === 0 ? 'disabled' : ''} aria-label="Mover para cima" title="Mover para cima">▲</button>
-                <button onclick="moverVeiculo(${v.id}, 1)" ${index === veiculos.length - 1 ? 'disabled' : ''} aria-label="Mover para baixo" title="Mover para baixo">▼</button>
+                <button onclick="moverVeiculo(${v.id}, 1)" ${index === veiculosAtivos.length - 1 ? 'disabled' : ''} aria-label="Mover para baixo" title="Mover para baixo">▼</button>
             </div>
             <strong>${v.nome}${v.placa ? ` (${v.placa})` : ''}</strong>
             <div class="card-shortcuts">
@@ -749,9 +784,13 @@ function renderizarLista() {
 
   const filtrados = entradas.filter(e => {
     const matchVeiculo = fVeiculo ? e.veiculoId == fVeiculo : true;
-    const matchTipo = filtrosAtivos.includes(e.tipo);
     const matchData = (!dInicio || e.data >= dInicio) && (!dFim || e.data <= dFim);
-    return matchVeiculo && matchTipo && matchData;
+
+    // Lógica: Se o item está excluído, verifica se o filtro 'excluido' está ativo.
+    // Se não está excluído, verifica se o tipo original do item está nos filtros ativos.
+    const matchTipoOuExcluido = (e.excluido && filtrosAtivos.includes('excluido')) || (!e.excluido && filtrosAtivos.includes(e.tipo));
+
+    return matchVeiculo && matchData && matchTipoOuExcluido;
   }).sort((a, b) => {
     if (a.data !== b.data) return b.data.localeCompare(a.data);
     if (a.km !== b.km) return b.km - a.km;
@@ -796,11 +835,11 @@ function renderizarLista() {
     }
 
     return `
-      <div class="entrada-card">
+      <div class="entrada-card ${e.excluido ? 'excluido' : ''}">
         <div class="entrada-header" onclick="toggleDetalhes(${e.id})">
           <div class="entrada-icon">${icones[e.tipo]}</div>
           <div class="entrada-info-principal">
-            <strong>${localStr}</strong>
+            <strong>${localStr}${e.excluido ? ' <small>(Excluído)</small>' : ''}</strong>
             <span>${dataStr} • ${formatar(e.km, 0)} km${veiculos.length > 1 ? ` • ${v ? v.nome : 'Excluído'}` : ''}</span>
           </div>
           <div class="entrada-valor-total">R$ ${formatar(e.valorTotal, 2)}</div>
@@ -809,8 +848,11 @@ function renderizarLista() {
           ${detalhesHtml}
           ${e.obs ? `<p style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 1rem;"><strong>Obs:</strong> ${e.obs}</p>` : ''}
           <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-            <button onclick="editEntrada(${e.id})">Editar</button>
-            <button class="btn-del" onclick="deleteEntrada(${e.id})">Excluir</button>
+            ${e.excluido ?
+        `<button onclick="restaurarEntrada(${e.id})">Restaurar Registro</button>` :
+        `<button onclick="editEntrada(${e.id})">Editar</button>
+               <button class="btn-del" onclick="deleteEntrada(${e.id})">Excluir</button>`
+      }
           </div>
         </div>
       </div>
@@ -828,7 +870,52 @@ function renderizarLista() {
  */
 function deleteEntrada(id) {
   if (confirm('Deseja excluir este registro?')) {
-    entradas = entradas.filter(e => e.id !== id);
+    const agora = Date.now();
+    entradas = entradas.map(e => e.id === id ? { ...e, excluido: true, atualizadoEm: agora } : e);
     salvarESincronizar();
+  }
+}
+
+/**
+ * Restaura um registro marcado como excluído.
+ * @param {number} id - ID da entrada.
+ */
+function restaurarEntrada(id) {
+  const agora = Date.now();
+  entradas = entradas.map(e => e.id === id ? { ...e, excluido: false, atualizadoEm: agora } : e);
+  salvarESincronizar();
+  alert('Registro restaurado com sucesso!');
+}
+
+/**
+ * Remove permanentemente do banco de dados os registros que foram marcados 
+ * como excluídos há mais de 30 dias.
+ */
+function purgarRegistrosExcluidos() {
+  const diasLimite = 30;
+  const limiteMs = Date.now() - (diasLimite * 24 * 60 * 60 * 1000);
+
+  const confirmacao = confirm(
+    `ATENÇÃO: Isso removerá PERMANENTEMENTE todos os registros marcados como excluídos há mais de ${diasLimite} dias.\n\n` +
+    `IMPORTANTE: Certifique-se de que todos os seus dispositivos foram sincronizados recentemente. Caso contrário, itens deletados em um dispositivo podem reaparecer ao sincronizar outro que ainda não recebeu a ordem de exclusão.\n\n` +
+    `Deseja prosseguir com a limpeza definitiva?`
+  );
+
+  if (!confirmacao) return;
+
+  const totalVeiculosAntes = veiculos.length;
+  const totalEntradasAntes = entradas.length;
+
+  // Filtra mantendo apenas quem NÃO está excluído OU quem foi excluído mas ainda está dentro do prazo de 30 dias
+  veiculos = veiculos.filter(v => !v.excluido || (v.atualizadoEm && v.atualizadoEm > limiteMs));
+  entradas = entradas.filter(e => !e.excluido || (e.atualizadoEm && e.atualizadoEm > limiteMs));
+
+  const removidos = (totalVeiculosAntes - veiculos.length) + (totalEntradasAntes - entradas.length);
+
+  if (removidos > 0) {
+    salvarESincronizar();
+    alert(`Limpeza concluída! ${removidos} registro(s) antigo(s) foi(foram) removido(s) permanentemente.`);
+  } else {
+    alert("Nenhum registro excluído há mais de 30 dias foi encontrado.");
   }
 }

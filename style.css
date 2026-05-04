@@ -394,6 +394,15 @@ body.dark-mode .status-badge.edit {
   overflow: hidden;
 }
 
+.entrada-card.excluido {
+  opacity: 0.5;
+  border-style: dashed;
+}
+
+.entrada-card.excluido .entrada-info-principal strong {
+  text-decoration: line-through;
+}
+
 .entrada-header {
   padding: 1rem;
   display: grid;
