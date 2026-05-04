@@ -671,7 +671,7 @@ function exportarDados(veiculoId) {
   const veiculo = veiculos.find(v => v.id === veiculoId);
   if (!veiculo) return;
 
-  const registrosExport = entradas.filter(e => e.veiculoId === veiculoId);
+  const registrosExport = entradas.filter(e => e.veiculoId === veiculoId && !e.excluido);
 
   if (registrosExport.length === 0) {
     alert('Nenhum registro encontrado para exportar.');
