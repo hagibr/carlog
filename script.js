@@ -265,17 +265,42 @@ function buscarUltimoKm() {
   const vSelect = document.getElementById('entrada-veiculo');
   const dInput = document.getElementById('entrada-data');
   const kmInput = document.getElementById('entrada-km');
+  const hintData = document.getElementById('hint-data');
+  const hintKm = document.getElementById('hint-km');
+  const tipo = document.getElementById('entrada-tipo').value;
 
   const veiculoId = parseInt(vSelect.value);
   const dataSelecionada = dInput.value;
 
+  // Limpa os textos informativos
+  hintData.textContent = "";
+  hintKm.textContent = "";
+
   if (!veiculoId || !dataSelecionada) return;
 
-  const anteriores = entradas.filter(e => e.veiculoId === veiculoId && e.data <= dataSelecionada);
+  // Busca registros de abastecimento ou manutenção anteriores para as dicas
+  const anteriores = entradas.filter(e =>
+    e.veiculoId === veiculoId &&
+    e.data <= dataSelecionada &&
+    (e.tipo === 'abastecimento' || e.tipo === 'manutencao')
+  );
 
   if (anteriores.length > 0) {
     anteriores.sort((a, b) => a.data !== b.data ? b.data.localeCompare(a.data) : b.km - a.km);
-    kmInput.value = formatar(anteriores[0].km, 0);
+    const ultimo = anteriores[0];
+
+    // Sugestão automática de KM
+    kmInput.value = formatar(ultimo.km, 0);
+
+    // Formata a data para o padrão brasileiro DD/MM/AA
+    const [ano, mes, dia] = ultimo.data.split('-');
+    const dataFormatada = `${dia}/${mes}/${ano.slice(-2)}`;
+
+    // Exibe os textos apenas para tipos relevantes
+    if (tipo !== 'despesa') {
+      hintData.textContent = `Anterior: ${dataFormatada}`;
+      hintKm.textContent = `Anterior: ${formatar(ultimo.km, 0)} km`;
+    }
   } else {
     kmInput.value = "";
   }
