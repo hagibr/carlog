@@ -43,19 +43,17 @@
       <!-- Container onde o JS injeta os cards dos veiculos -->
       <div id="lista-veiculos-cards" class="cards-container"></div>
 
-      <!-- Botao que alterna a visibilidade do formulario de cadastro abaixo -->
-      <button id="btn-novo-veiculo" class="btn-add-main" onclick="toggleFormVeiculo()">+ Adicionar Novo Veículo</button>
-
-      <!-- Botão para disparar a importação de arquivo JSON -->
-      <button class="btn-add-main" onclick="document.getElementById('file-import').click()"
-        style="margin-top: 0.5rem; border-style: solid;">📥 Importar Veículo (JSON)</button>
       <input type="file" id="file-import" style="display:none" onchange="importarVeiculoJSON(event)" accept=".json">
 
       <!-- Formulario para novo veiculo (oculto por padrao) -->
       <form id="form-veiculo" style="display:none; margin-top: 1.5rem;">
+        <strong style="color: var(--primary); font-size: 1.1rem;">Adicionar Novo Veículo</strong>
         <input type="text" id="veiculo-nome" placeholder="Ex: Onix 2023 / Honda CB 500" required>
         <input type="text" id="veiculo-placa" placeholder="Placa (opcional)">
-        <button type="submit">Adicionar Veículo</button>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="toggleFormVeiculo()">Cancelar</button>
+          <button type="submit" class="btn-save">Adicionar Veículo</button>
+        </div>
       </form>
     </section>
 

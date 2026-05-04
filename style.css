@@ -121,6 +121,11 @@ button {
   transition: 0.2s;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 input,
 select,
 textarea {
@@ -204,6 +209,32 @@ form {
   flex-direction: column;
   gap: 0.5rem;
   text-align: center;
+}
+
+.card-reorder {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-reorder button {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.card-action {
+  border-style: dashed !important;
+  cursor: pointer;
+  justify-content: center;
+  min-height: 120px;
+  opacity: 0.7;
+}
+
+.card-action:hover {
+  opacity: 1;
+  border-color: var(--primary) !important;
+  color: var(--primary);
 }
 
 .card-shortcuts {

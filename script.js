@@ -181,14 +181,34 @@ function cancelEdit() {
  */
 function toggleFormVeiculo() {
   const form = document.getElementById('form-veiculo');
-  const btn = document.getElementById('btn-novo-veiculo');
+  const cards = document.getElementById('lista-veiculos-cards');
   if (form.style.display === 'none') {
     form.style.display = 'flex';
-    btn.style.display = 'none';
+    cards.style.display = 'none';
   } else {
     form.style.display = 'none';
-    btn.style.display = 'block';
+    cards.style.display = 'grid';
   }
+}
+
+/**
+ * Move um veículo para cima ou para baixo no array de ordem.
+ * @param {number} id - ID do veículo.
+ * @param {number} direcao - -1 para subir, 1 para descer.
+ */
+function moverVeiculo(id, direcao) {
+  const index = veiculos.findIndex(v => v.id === id);
+  if (index === -1) return;
+
+  const novoIndex = index + direcao;
+  if (novoIndex < 0 || novoIndex >= veiculos.length) return;
+
+  // Troca as posições no array
+  const temp = veiculos[index];
+  veiculos[index] = veiculos[novoIndex];
+  veiculos[novoIndex] = temp;
+
+  salvarESincronizar();
 }
 
 // Lógica de Veículos
@@ -651,9 +671,23 @@ function atualizarUI() {
   vSelect.disabled = editandoId !== null || veiculos.length <= 1;
   fSelect.disabled = veiculos.length <= 1;
 
+  // HTML dos cards de ação (Adicionar e Importar)
+  const actionCardsHtml = `
+    <div class="card-veiculo card-action" onclick="toggleFormVeiculo()">
+      <strong>+ Adicionar Novo</strong>
+    </div>
+    <div class="card-veiculo card-action" onclick="document.getElementById('file-import').click()">
+      <strong>📥 Importar (JSON)</strong>
+    </div>
+  `;
+
   // Renderizar Cards de Veículos
-  document.getElementById('lista-veiculos-cards').innerHTML = veiculos.map(v => `
+  const veiculosHtml = veiculos.map((v, index) => `
         <div class="card-veiculo">
+            <div class="card-reorder">
+                <button onclick="moverVeiculo(${v.id}, -1)" ${index === 0 ? 'disabled' : ''} aria-label="Mover para cima" title="Mover para cima">▲</button>
+                <button onclick="moverVeiculo(${v.id}, 1)" ${index === veiculos.length - 1 ? 'disabled' : ''} aria-label="Mover para baixo" title="Mover para baixo">▼</button>
+            </div>
             <strong>${v.nome}${v.placa ? ` (${v.placa})` : ''}</strong>
             <div class="card-shortcuts">
                 <button onclick="irPararegistros(${v.id})">Registros</button>
@@ -665,6 +699,8 @@ function atualizarUI() {
             <button class="btn-del" onclick="deleteVeiculo(${v.id})">Excluir Veículo</button>
         </div>
     `).join('');
+
+  document.getElementById('lista-veiculos-cards').innerHTML = veiculosHtml + actionCardsHtml;
 
   renderizarLista();
 }
