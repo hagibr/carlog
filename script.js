@@ -97,6 +97,7 @@ async function sincronizarComNuvem(manual = false) {
     const data = doc.data();
     veiculos = data.veiculos || [];
     entradas = data.entradas || [];
+    inicializarDatasFiltro(); // Garante que os limites de data no relatório acompanhem os novos dados da nuvem
     salvarESincronizar(); // Atualiza localmente e renderiza
   }
 
