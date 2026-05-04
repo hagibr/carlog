@@ -104,7 +104,6 @@ async function sincronizarComNuvem(manual = false) {
     const data = doc.data();
     veiculos = data.veiculos || [];
     entradas = data.entradas || [];
-    inicializarDatasFiltro(); // Garante que os limites de data no relatório acompanhem os novos dados da nuvem
     salvarESincronizar(); // Atualiza localmente e renderiza
   }
 
@@ -651,6 +650,9 @@ function importarVeiculoJSON(event) {
  * os cartões da aba de veículos e o estado dos filtros.
  */
 function atualizarUI() {
+  // Atualiza os limites de data para que novos registros ou exclusões sejam refletidos nos filtros automaticamente
+  inicializarDatasFiltro();
+
   // Atualizar selects de veículos
   const vSelect = document.getElementById('entrada-veiculo');
   const fSelect = document.getElementById('filtro-veiculo');
