@@ -69,8 +69,10 @@ function loginGoogle() {
  * Faz o logout do usuário.
  */
 function logout() {
-  auth.signOut();
-  location.reload(); // Recarrega para limpar estado e voltar ao local
+  if (confirm('Tem certeza que deseja sair da sua conta?')) {
+    auth.signOut();
+    location.reload(); // Recarrega para limpar estado e voltar ao local
+  }
 }
 
 /**
@@ -92,25 +94,53 @@ function gerenciarUIAuntenticacao(user) {
 }
 
 /**
- * Baixa os dados da nuvem se o usuário estiver logado.
+ * Baixa os dados da nuvem e realiza uma mesclagem (merge) com os dados locais
+ * para evitar perda de informações criadas offline ou em outros dispositivos.
  * @param {boolean} manual - Indica se a sincronização foi disparada manualmente pelo usuário.
  */
 async function sincronizarComNuvem(manual = false) {
   if (!usuarioAtual) return;
   if (manual) document.getElementById('btn-sync').textContent = 'Sincronizando...';
 
-  const doc = await db.collection('carlog').doc(usuarioAtual.uid).get();
-  if (doc.exists) {
-    const data = doc.data();
-    veiculos = data.veiculos || [];
-    entradas = data.entradas || [];
-    salvarESincronizar(); // Atualiza localmente e renderiza
+  try {
+    const doc = await db.collection('carlog').doc(usuarioAtual.uid).get();
+    if (doc.exists) {
+      const data = doc.data();
+
+      // Mescla os arrays comparando IDs para não sobrescrever dados novos de outros dispositivos
+      // nem perder o que foi criado localmente enquanto estava offline.
+      veiculos = mesclarArraysPorId(veiculos, data.veiculos || []);
+      entradas = mesclarArraysPorId(entradas, data.entradas || []);
+
+      salvarESincronizar(); // Atualiza localmente e envia a versão mesclada para a nuvem
+    } else if (veiculos.length > 0 || entradas.length > 0) {
+      // Caso o usuário tenha dados locais mas nenhum na nuvem (ex: primeiro login após uso offline)
+      salvarESincronizar();
+    }
+  } catch (error) {
+    console.error("Erro ao sincronizar com nuvem:", error);
   }
 
   if (manual) {
     document.getElementById('btn-sync').textContent = 'Sincronizar';
     alert('Dados sincronizados com a nuvem!');
   }
+}
+
+/**
+ * Auxiliar para mesclar dois arrays de objetos usando o 'id' como chave única.
+ * Prioriza os dados remotos para itens com mesmo ID, mas mantém itens exclusivos de ambos.
+ * @param {Array} local - Dados atuais na memória do dispositivo.
+ * @param {Array} remoto - Dados vindos do Firestore.
+ * @returns {Array} Array mesclado.
+ */
+function mesclarArraysPorId(local, remoto) {
+  const mapa = new Map();
+  // Adiciona itens locais primeiro
+  local.forEach(item => mapa.set(item.id, item));
+  // Adiciona/Sobrescreve com itens remotos (considerados versão mais atual para conflitos no mesmo ID)
+  remoto.forEach(item => mapa.set(item.id, item));
+  return Array.from(mapa.values());
 }
 
 /**
