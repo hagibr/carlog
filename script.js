@@ -437,6 +437,7 @@ function addEntrada(e) {
 
   // Captura o ID do veículo selecionado antes do reset do formulário
   const currentSelectedVeiculoId = parseInt(document.getElementById('entrada-veiculo').value);
+  const currentSelectedTipo = tipo;
 
   const entrada = {
     id: Date.now(),
@@ -491,7 +492,10 @@ function addEntrada(e) {
   const veiculoSelect = document.getElementById('entrada-veiculo');
   veiculoSelect.value = currentSelectedVeiculoId;
 
-  // Garante que o tipo de campo correto (Abastecimento) seja exibido após o reset do formulário
+  // Re-seleciona o tipo de gasto que estava ativo
+  document.getElementById('entrada-tipo').value = currentSelectedTipo;
+
+  // Garante que os campos específicos corretos sejam exibidos após o reset do formulário
   toggleTipoCampos();
 
   // Restaura a data para hoje (o reset a limpa)
