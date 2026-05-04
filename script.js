@@ -136,14 +136,29 @@ async function sincronizarComNuvem(manual = false) {
  */
 function mesclarArraysPorId(local, remoto) {
   const mapa = new Map();
-  // Adiciona itens locais primeiro
-  local.forEach(item => mapa.set(item.id, item));
-  // Mescla com itens remotos baseando-se no timestamp de atualização
-  remoto.forEach(itemRemoto => {
-    const itemLocal = mapa.get(itemRemoto.id);
-    // Se o item não existe localmente ou o remoto é mais recente, atualiza o estado local
-    if (!itemLocal || (itemRemoto.atualizadoEm || 0) > (itemLocal.atualizadoEm || 0)) {
-      mapa.set(itemRemoto.id, itemRemoto);
+  const diasLimite = 30;
+  const limiteMs = Date.now() - (diasLimite * 24 * 60 * 60 * 1000);
+
+  // 1. Priorizamos os dados que estão na nuvem (remoto)
+  remoto.forEach(item => mapa.set(item.id, item));
+
+  // 2. Analisamos os dados locais para complementar
+  local.forEach(itemLocal => {
+    const itemRemoto = mapa.get(itemLocal.id);
+
+    if (itemRemoto) {
+      // Se existe em ambos, vence o que foi atualizado por último
+      if ((itemLocal.atualizadoEm || 0) > (itemRemoto.atualizadoEm || 0)) {
+        mapa.set(itemLocal.id, itemLocal);
+      }
+    } else {
+      // O item existe localmente mas NÃO existe na nuvem.
+      // Decidimos se devemos mantê-lo ou se ele é um "zumbi" que foi purgado:
+      const ehExclusaoAntiga = itemLocal.excluido && (itemLocal.atualizadoEm || 0) < limiteMs;
+
+      if (!ehExclusaoAntiga) {
+        mapa.set(itemLocal.id, itemLocal);
+      }
     }
   });
   return Array.from(mapa.values());
