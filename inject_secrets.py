@@ -12,4 +12,5 @@ content = f"""const firebaseConfig = {{
 }};"""
 
 with open('config.js', 'w') as f:
-    f.write(content)
+  f.write(content)
+print("Arquivo config.js gerado com sucesso!")
