@@ -1,16 +1,3 @@
-// Configuração do Firebase (Substitua pelos seus dados do console)
-const firebaseConfig = {
-  apiKey: "AIzaSyCf9dOhNw-uB_5vp1z8U0MVfLbtjCV1N54",
-  authDomain: "carlog-5be41.firebaseapp.com",
-  projectId: "carlog-5be41",
-  storageBucket: "carlog-5be41.firebasestorage.app",
-  messagingSenderId: "349944380532",
-  appId: "1:349944380532:web:a726794cf6125c16e52521",
-  measurementId: "G-2GBYV5CSX2"
-};
-
-
-
 // Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
