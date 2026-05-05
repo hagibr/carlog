@@ -16,14 +16,17 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        # Atualize de v4 para v5 (ou a última disponível)
+        uses: actions/checkout@v5 
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Configurar Python
+        # Atualize de v4 para v5
+        uses: actions/setup-python@v5 
         with:
           python-version: '3.x'
 
-      - name: Inject Secrets
+      - name: Injetar Firebase Secrets
         run: python inject_secrets.py
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
@@ -35,7 +38,7 @@ jobs:
           FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ # ou a pasta onde está seu index.html
