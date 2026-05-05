@@ -825,12 +825,42 @@ function renderizarLista() {
     let localStr = '';
 
     if (e.tipo === 'abastecimento') {
+      // Cálculo de Eficiência (Rendimento) - Baseado no próximo abastecimento
+      let mediaHtml = '';
+      if (!e.excluido) {
+        // Filtra por abastecimentos subsequentes e não excluídos para o mesmo veículo
+        const proximosAbastecimentos = entradas.filter(curr =>
+          !curr.excluido &&
+          curr.veiculoId === e.veiculoId &&
+          curr.tipo === 'abastecimento' &&
+          curr.km > e.km
+        );
+
+        // Encontra o abastecimento com a menor KM (o próximo mais próximo)
+        let proximo = null;
+        if (proximosAbastecimentos.length > 0) {
+          proximo = proximosAbastecimentos.reduce((minKmEvent, currentEvent) => {
+            return (!minKmEvent || currentEvent.km < minKmEvent.km) ? currentEvent : minKmEvent;
+          }, null);
+        }
+
+        if (proximo && proximo.detalhes.litros > 0) {
+          const deltaKm = proximo.km - e.km;
+          // Garante que a distância percorrida seja positiva
+          if (deltaKm > 0) {
+            const rendimento = deltaKm / proximo.detalhes.litros;
+            mediaHtml = `<div><strong>Média:</strong> ${formatar(rendimento, 2)} km/L</div>`;
+          }
+        }
+      }
+
       localStr = e.detalhes.local || 'Posto não informado';
       detalhesHtml = `
         <div class="detalhes-grid">
           <div><strong>Combustível:</strong> ${e.detalhes.combustivel}</div>
           <div><strong>Litros:</strong> ${formatar(e.detalhes.litros, 3)}</div>
           <div><strong>Preço/L:</strong> ${formatar(e.detalhes.precoL, 2)}</div>
+          ${mediaHtml}
         </div>
       `;
     } else if (e.tipo === 'manutencao') {
