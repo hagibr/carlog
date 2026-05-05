@@ -17,20 +17,65 @@
   <nav>
     <div class="brand">
       <div class="logo">CarLog</div>
-      <button id="btn-theme-toggle" onclick="toggleTheme()" title="Alternar Tema">🌙</button>
+      <button id="btn-theme-toggle" onclick="toggleTheme()" title="Alternar Tema">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
     </div>
     <div class="menu">
       <button onclick="showSection('section-veiculos')">Veículos</button>
       <button onclick="showSection('section-registro')">Registros</button>
       <button onclick="showSection('section-lista')">Relatórios</button>
       <div id="auth-container">
-        <button id="btn-login" onclick="loginGoogle()">Login Google</button>
+        <button id="btn-login" onclick="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4"
+              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" />
+            <path fill="#34A853"
+              d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
+            <path fill="#FBBC05"
+              d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" />
+            <path fill="#EA4335"
+              d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.582C13.463.891 11.426 0 9 0 5.482 0 2.443 2.043.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" />
+          </svg>
+        </button>
         <div id="user-info" style="display: none;">
-          <button id="btn-sync" onclick="sincronizarComNuvem(true)">Sincronizar</button>
-          <button id="btn-purge" onclick="purgarRegistrosExcluidos()"
-            title="Limpar registros excluídos permanentemente">🧹</button>
-          <img id="user-photo" src="" style="width: 30px; border-radius: 50%;">
-          <button onclick="logout()">Sair</button>
+          <div class="user-dropdown-container">
+            <img id="user-photo" src="" alt="Usuário" onclick="toggleUserMenu()" referrerpolicy="no-referrer">
+            <div id="user-dropdown" class="dropdown-content">
+              <div class="close-dropdown" onclick="toggleUserMenu()">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+              <div id="user-name-display" class="user-name-header"></div>
+              <hr>
+              <button id="btn-sync" onclick="sincronizarComNuvem(true)">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                </span> 
+                <span id="btn-sync-text">Sincronizar Nuvem</span>
+              </button>
+              <button id="btn-purge" onclick="purgarRegistrosExcluidos()">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </span>
+                Limpar Lixeira
+              </button>
+              <hr>
+              <button id="btn-logout" onclick="logout()">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </span>
+                Sair da Conta
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

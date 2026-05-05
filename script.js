@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-mode');
-    document.getElementById('btn-theme-toggle').textContent = '☀️';
   }
 
   // Listener de Autenticação
@@ -69,16 +68,37 @@ function gerenciarUIAuntenticacao(user) {
   const btnLogin = document.getElementById('btn-login');
   const userInfo = document.getElementById('user-info');
   const userPhoto = document.getElementById('user-photo');
+  const userDropdown = document.getElementById('user-dropdown');
+  const userNameDisplay = document.getElementById('user-name-display');
 
   if (user) {
     btnLogin.style.display = 'none';
     userInfo.style.display = 'flex';
     userPhoto.src = user.photoURL;
+    userDropdown.style.display = 'none';
+    if (userNameDisplay) userNameDisplay.textContent = user.displayName || "Usuário";
   } else {
     btnLogin.style.display = 'block';
     userInfo.style.display = 'none';
   }
 }
+
+/**
+ * Alterna a visibilidade do menu do usuário.
+ */
+function toggleUserMenu() {
+  const dropdown = document.getElementById('user-dropdown');
+  dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+// Fecha o menu se clicar fora dele
+window.addEventListener('click', (e) => {
+  const container = document.querySelector('.user-dropdown-container');
+  const dropdown = document.getElementById('user-dropdown');
+  if (container && !container.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 /**
  * Baixa os dados da nuvem e realiza uma mesclagem (merge) com os dados locais
@@ -87,7 +107,8 @@ function gerenciarUIAuntenticacao(user) {
  */
 async function sincronizarComNuvem(manual = false) {
   if (!usuarioAtual) return;
-  if (manual) document.getElementById('btn-sync').textContent = 'Sincronizando...';
+  const syncTextEl = document.getElementById('btn-sync-text');
+  if (manual && syncTextEl) syncTextEl.textContent = 'Sincronizando...';
 
   try {
     const doc = await db.collection('carlog').doc(usuarioAtual.uid).get();
@@ -108,8 +129,8 @@ async function sincronizarComNuvem(manual = false) {
     console.error("Erro ao sincronizar com nuvem:", error);
   }
 
-  if (manual) {
-    document.getElementById('btn-sync').textContent = 'Sincronizar';
+  if (manual && syncTextEl) {
+    syncTextEl.textContent = 'Sincronizar Nuvem';
     alert('Dados sincronizados com a nuvem!');
   }
 }
@@ -157,7 +178,6 @@ function mesclarArraysPorId(local, remoto) {
 function toggleTheme() {
   const isDark = document.body.classList.toggle('dark-mode');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  document.getElementById('btn-theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 

@@ -60,13 +60,34 @@ nav {
 }
 
 #btn-theme-toggle {
-  width: 42px;
-  flex: none !important;
-  /* Impede que o botão expanda no flexbox */
+  width: 35px;
+  height: 35px;
+  flex: none;
   margin-left: 0.75rem;
   display: flex;
   justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  padding: 0;
+  transition: background 0.2s;
 }
+
+#btn-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#btn-theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  display: none;
+}
+
+/* Exibe o ícone de ação (o que o clique fará) */
+body:not(.dark-mode) #btn-theme-toggle .moon-icon { display: block; }
+body.dark-mode #btn-theme-toggle .sun-icon { display: block; }
 
 .menu {
   display: flex;
@@ -91,12 +112,121 @@ nav button:hover {
 
 #user-info {
   align-items: center;
-  gap: 0.5rem;
 }
 
-#user-info span {
-  font-size: 0.8rem;
-  color: white;
+.user-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#user-photo {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.2s;
+  object-fit: cover;
+  background-color: var(--secondary); /* Cor de fundo caso a imagem falhe */
+}
+
+#user-photo:hover {
+  border-color: white;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: var(--card);
+  color: var(--text) !important;
+  min-width: 180px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  z-index: 1001;
+  border-radius: 8px;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.close-dropdown {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--secondary) !important;
+  transition: all 0.2s;
+}
+.close-dropdown:hover { 
+  color: var(--primary); 
+  border-color: var(--primary);
+}
+
+.user-name-header {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--primary);
+  word-break: break-all;
+}
+
+.dropdown-content button {
+  width: 100%;
+  text-align: left;
+  background: transparent !important;
+  color: var(--text) !important;
+  padding: 0.6rem 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+  display: flex; /* Para alinhar o ícone com o texto */
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dropdown-content button .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--secondary) !important;
+  transition: color 0.2s;
+}
+
+/* Garante que o texto dentro do span (Sincronizar Nuvem) também tenha a cor correta */
+.dropdown-content button span {
+  color: inherit;
+}
+
+.dropdown-content svg,
+.close-dropdown svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  stroke: currentColor;
+}
+
+.dropdown-content button:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.dropdown-content button:hover .icon {
+  color: var(--primary);
+}
+
+.dropdown-content hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 0.4rem 0;
 }
 
 main {
@@ -510,4 +640,22 @@ body.dark-mode .status-badge.edit {
   .toggle-filtros {
     justify-content: center;
   }
+}
+
+#btn-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 50%;
+  transition: background 0.2s, box-shadow 0.2s;
+  padding: 0;
+}
+
+#btn-login:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
