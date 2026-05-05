@@ -40,12 +40,11 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
 
-      - name: Deploy para GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload para o GitHub Pages
+        # Esta action ignora o .gitignore e sobe tudo o que está na pasta
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          # Garante que arquivos novos criados pelo script Python sejam incluídos
-          force_orphan: true
-          # ESTA LINHA É A CHAVE:
-          exclude_assets: ''
+          path: '.' 
+
+      - name: Deploy
+        uses: actions/deploy-pages@v4
