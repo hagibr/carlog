@@ -490,7 +490,7 @@ body.dark-mode .status-badge.edit {
   }
 
   .form-actions {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
   .filtros {
