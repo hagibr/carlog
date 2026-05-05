@@ -27,7 +27,10 @@ jobs:
           python-version: '3.x'
 
       - name: Injetar Firebase Secrets
-        run: python inject_secrets.py
+        run: | 
+          python inject_secrets.py
+          echo "Verificando se o arquivo foi criado:"
+          ls -R
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
@@ -44,3 +47,5 @@ jobs:
           publish_dir: .
           # Garante que arquivos novos criados pelo script Python sejam incluídos
           force_orphan: true
+          # ESTA LINHA É A CHAVE:
+          exclude_assets: ''
