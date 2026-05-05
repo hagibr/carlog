@@ -173,6 +173,13 @@ function toggleTheme() {
   document.getElementById('btn-theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
 
+
+function formatarDataBR(isoData) {
+  if (!isoData) return "";
+  const [ano, mes, dia] = isoData.split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
 // Navegação Simples
 /**
  * Gerencia a troca de seções (abas) da aplicação.
@@ -191,8 +198,7 @@ function showSection(id) {
     if (!editandoId) {
       document.getElementById('form-entrada').reset();
       document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar';
-      const hoje = new Date().toISOString().split('T')[0];
-      document.getElementById('entrada-data').value = hoje;
+      document.getElementById('entrada-data').value = new Date().toISOString().split('T')[0];
       toggleTipoCampos();
       statusEl.textContent = 'Novo';
       statusEl.className = 'status-badge';
@@ -218,8 +224,7 @@ function cancelEdit() {
   editandoId = null;
   document.getElementById('form-entrada').reset();
   document.querySelector('#form-entrada button[type="submit"]').textContent = 'Salvar';
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('entrada-data').value = hoje;
+  document.getElementById('entrada-data').value = new Date().toISOString().split('T')[0];
   document.getElementById('entrada-veiculo').disabled = veiculos.length <= 1;
   document.getElementById('entrada-tipo').disabled = false;
   buscarUltimoKm();
@@ -333,18 +338,26 @@ function irParaRelatorios(veiculoId) {
  * Inicializa os campos de filtro de data com o registro mais antigo e o mais novo.
  */
 function inicializarDatasFiltro() {
+  const vSelect = document.getElementById('filtro-veiculo');
+  const fVeiculo = vSelect ? vSelect.value : "";
   const inicioInput = document.getElementById('filtro-data-inicio');
   const fimInput = document.getElementById('filtro-data-fim');
 
-  // Consideramos todos os registros (incluindo excluídos) para definir o limite do calendário.
-  // Isso evita que registros na lixeira fiquem "escondidos" fora do intervalo automático.
-  if (entradas.length === 0) {
+  // Filtra a base de dados usando a mesma lógica da listagem (Tipo + Veículo + Lixeira)
+  const listaBase = entradas.filter(e => {
+    const matchVeiculo = fVeiculo ? e.veiculoId == fVeiculo : true;
+    const matchTipoOuExcluido = (e.excluido && filtrosAtivos.includes('excluido')) || 
+                                (!e.excluido && filtrosAtivos.includes(e.tipo));
+    return matchVeiculo && matchTipoOuExcluido;
+  });
+
+  if (listaBase.length === 0) {
     inicioInput.value = "";
     fimInput.value = "";
     return;
   }
 
-  const datas = entradas.map(e => e.data).sort();
+  const datas = listaBase.map(e => e.data).sort();
   inicioInput.value = datas[0];
   fimInput.value = datas[datas.length - 1];
 }
@@ -385,7 +398,6 @@ function buscarUltimoKm() {
 
   const veiculoId = parseInt(vSelect.value);
   const dataSelecionada = dInput.value;
-
   // Limpa os textos informativos
   hintData.textContent = "";
   hintKm.textContent = "";
@@ -407,9 +419,7 @@ function buscarUltimoKm() {
     // Sugestão automática de KM
     kmInput.value = formatar(ultimo.km, 0);
 
-    // Formata a data para o padrão brasileiro DD/MM/AA
-    const [ano, mes, dia] = ultimo.data.split('-');
-    const dataFormatada = `${dia}/${mes}/${ano.slice(-2)}`;
+    const dataFormatada = formatarDataBR(ultimo.data);
 
     // Exibe os textos apenas para tipos relevantes
     if (tipo !== 'despesa') {
@@ -437,6 +447,8 @@ function toggleFiltro(btn) {
     filtrosAtivos.push(tipo);
     btn.classList.add('active');
   }
+
+  inicializarDatasFiltro();
   renderizarLista();
 }
 
@@ -641,8 +653,7 @@ function addEntrada(e) {
   toggleTipoCampos();
 
   // Restaura a data para hoje (o reset a limpa)
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('entrada-data').value = hoje;
+  document.getElementById('entrada-data').value = new Date().toISOString().split('T')[0];
 
   buscarUltimoKm(); // Atualiza o KM sugerido para o veículo re-selecionado
   alert(isEdit ? 'Registro atualizado com sucesso!' : 'Entrada salva com sucesso!');
@@ -821,8 +832,7 @@ function renderizarLista() {
 
   container.innerHTML = filtrados.map(e => {
     const v = veiculos.find(v => v.id == e.veiculoId);
-    const [ano, mes, dia] = e.data.split('-');
-    const dataStr = `${dia}/${mes}/${ano.slice(-2)}`;
+    const dataStr = formatarDataBR(e.data);
 
     let detalhesHtml = '';
     let localStr = '';

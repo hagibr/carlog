@@ -1,6 +1,10 @@
 /* ==========================================================================
    1. VARIÁVEIS E RESET GLOBAL
    ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --primary: #2563eb;
   --secondary: #64748b;
@@ -135,6 +139,8 @@ textarea {
   font-size: 1rem;
   background: var(--card);
   color: var(--text);
+  min-width: 0; /* Permite que o campo encolha dentro de flex/grid */
+  width: 100%;
 }
 
 form {
@@ -152,7 +158,7 @@ form {
 
 .grid-3 {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
 }
 
@@ -161,6 +167,8 @@ form {
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap; /* Permite que o campo pule para baixo se o label for longo */
+  min-width: 0;
 }
 
 .form-group label {
@@ -176,6 +184,7 @@ form {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .field-hint {

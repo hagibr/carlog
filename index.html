@@ -86,7 +86,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Data/Hora:</label>
+            <label>Data:</label>
             <div class="input-container">
               <input type="date" id="entrada-data" onchange="buscarUltimoKm()" required>
               <small id="hint-data" class="field-hint"></small>
@@ -172,7 +172,7 @@
 
       <!-- Controles de filtragem -->
       <div class="filtros">
-        <select id="filtro-veiculo" onchange="renderizarLista()">
+        <select id="filtro-veiculo" onchange="inicializarDatasFiltro(); renderizarLista()">
           <option value="">Todos os Veículos</option>
         </select>
         <!-- Toggle buttons para filtro rapido por categoria -->
