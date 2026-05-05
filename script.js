@@ -180,6 +180,10 @@ function toggleTheme() {
  * @param {string} id - O ID da seção a ser exibida.
  */
 function showSection(id) {
+  // Garante que a UI (selects, cards) esteja atualizada antes de configurar a seção,
+  // pois a lógica de "Novo Registro" depende dos selects já populados.
+  atualizarUI();
+
   if (id === 'section-registro') {
     const statusEl = document.getElementById('registro-status');
     const veiculoSelect = document.getElementById('entrada-veiculo');
@@ -203,7 +207,6 @@ function showSection(id) {
 
   document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
   document.getElementById(id).style.display = 'block';
-  atualizarUI();
 }
 
 // Função para cancelar a edição e iniciar um novo registro
