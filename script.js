@@ -728,6 +728,84 @@ function exportarDados(veiculoId) {
 }
 
 /**
+ * Escapa caracteres que podem quebrar tabelas Markdown e converte quebras de linha.
+ * @param {string} texto - O texto a ser tratado.
+ * @returns {string} Texto formatado para Markdown.
+ */
+function escaparMarkdown(texto) {
+  if (!texto) return "-";
+  return texto
+    .replace(/\|/g, '\\|') // Escapa o pipe (|)
+    .replace(/\n/g, '<br>') // Substitui quebras de linha por <br>
+    .replace(/\r/g, '');    // Remove retornos de carro
+}
+
+/**
+ * Exporta os registros de um veículo no formato Markdown, organizado em tabelas.
+ * @param {number} veiculoId - ID do veículo.
+ */
+function exportarDadosMarkdown(veiculoId) {
+  const veiculo = veiculos.find(v => v.id === veiculoId);
+  if (!veiculo) return;
+
+  const registros = entradas.filter(e => e.veiculoId === veiculoId && !e.excluido);
+
+  if (registros.length === 0) {
+    alert('Nenhum registro encontrado para exportar.');
+    return;
+  }
+
+  let md = `# Relatório de Registros - ${veiculo.nome} ${veiculo.placa ? `(${veiculo.placa})` : ''}\n\n`;
+
+  // Abastecimentos
+  const abastecimentos = registros.filter(r => r.tipo === 'abastecimento').sort((a, b) => b.data.localeCompare(a.data));
+  md += `## Abastecimentos\n\n`;
+  if (abastecimentos.length > 0) {
+    md += `| Data | KM | Local | Combustível | Litros | Preço/L | Total | Obs |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    abastecimentos.forEach(r => {
+      md += `| ${formatarDataBR(r.data)} | ${formatar(r.km, 0)} | ${r.detalhes.local || '-'} | ${r.detalhes.combustivel || '-'} | ${formatar(r.detalhes.litros, 3)} | R$ ${formatar(r.detalhes.precoL, 2)} | R$ ${formatar(r.valorTotal, 2)} | ${escaparMarkdown(r.obs)} |\n`;
+    });
+  } else {
+    md += `Nenhum abastecimento registrado.\n`;
+  }
+  md += `\n`;
+
+  // Manutenções
+  const manutencoes = registros.filter(r => r.tipo === 'manutencao').sort((a, b) => b.data.localeCompare(a.data));
+  md += `## Manutenções\n\n`;
+  if (manutencoes.length > 0) {
+    md += `| Data | KM | Local | Peças | Mão de Obra | Total | Obs |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    manutencoes.forEach(r => {
+      md += `| ${formatarDataBR(r.data)} | ${formatar(r.km, 0)} | ${r.detalhes.local || '-'} | R$ ${formatar(r.detalhes.pecas, 2)} | R$ ${formatar(r.detalhes.mo, 2)} | R$ ${formatar(r.valorTotal, 2)} | ${escaparMarkdown(r.obs)} |\n`;
+    });
+  } else {
+    md += `Nenhuma manutenção registrada.\n`;
+  }
+  md += `\n`;
+
+  // Despesas
+  const despesas = registros.filter(r => r.tipo === 'despesa').sort((a, b) => b.data.localeCompare(a.data));
+  md += `## Outras Despesas\n\n`;
+  if (despesas.length > 0) {
+    md += `| Data | KM | Nome | Referência | Total | Obs |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    despesas.forEach(r => {
+      md += `| ${formatarDataBR(r.data)} | ${formatar(r.km, 0)} | ${r.detalhes.nome || '-'} | ${r.detalhes.ref ? formatarDataBR(r.detalhes.ref) : '-'} | R$ ${formatar(r.valorTotal, 2)} | ${escaparMarkdown(r.obs)} |\n`;
+    });
+  } else {
+    md += `Nenhuma despesa registrada.\n`;
+  }
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `relatorio_${veiculo.nome.replace(/\s+/g, '_').toLowerCase()}.md`;
+  link.click();
+}
+
+/**
  * Importa um veículo e seus registros a partir de um arquivo JSON.
  * @param {Event} event - Evento de alteração do input de arquivo.
  */
@@ -817,8 +895,9 @@ function atualizarUI() {
                 <button onclick="irPararegistros(${v.id})">Registros</button>
                 <button onclick="irParaRelatorios(${v.id})">Relatórios</button>
             </div>
-            <div class="card-shortcuts" style="justify-content: center;">
-                <button onclick="exportarDados(${v.id})">Exportar JSON</button>
+            <div class="card-shortcuts">
+                <button onclick="exportarDados(${v.id})">JSON</button>
+                <button onclick="exportarDadosMarkdown(${v.id})">Markdown</button>
             </div>
             <button class="btn-del" onclick="deleteVeiculo(${v.id})">Excluir Veículo</button>
         </div>
