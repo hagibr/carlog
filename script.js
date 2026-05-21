@@ -353,8 +353,8 @@ function inicializarDatasFiltro() {
   // Filtra a base de dados usando a mesma lógica da listagem (Tipo + Veículo + Lixeira)
   const listaBase = entradas.filter(e => {
     const matchVeiculo = fVeiculo ? e.veiculoId == fVeiculo : true;
-    const matchTipoOuExcluido = (e.excluido && filtrosAtivos.includes('excluido')) || 
-                                (!e.excluido && filtrosAtivos.includes(e.tipo));
+    const matchTipoOuExcluido = (e.excluido && filtrosAtivos.includes('excluido')) ||
+      (!e.excluido && filtrosAtivos.includes(e.tipo));
     return matchVeiculo && matchTipoOuExcluido;
   });
 
@@ -394,20 +394,25 @@ function resetarFiltros() {
  * Ordena por data (desc) e KM (desc) para encontrar o valor mais coerente.
  */
 function buscarUltimoKm() {
-  if (editandoId) return;
-
   const vSelect = document.getElementById('entrada-veiculo');
   const dInput = document.getElementById('entrada-data');
   const kmInput = document.getElementById('entrada-km');
   const hintData = document.getElementById('hint-data');
   const hintKm = document.getElementById('hint-km');
+  const hintLocal = document.getElementById('hint-abs-local');
+  const hintComb = document.getElementById('hint-abs-combustivel');
+  const hintLitros = document.getElementById('hint-abs-litros');
+  const hintPrecoL = document.getElementById('hint-abs-preco-litro');
+  const hintTotal = document.getElementById('hint-abs-total');
   const tipo = document.getElementById('entrada-tipo').value;
 
   const veiculoId = parseInt(vSelect.value);
   const dataSelecionada = dInput.value;
-  // Limpa os textos informativos
-  hintData.textContent = "";
-  hintKm.textContent = "";
+
+  // Limpa todos os textos informativos
+  [hintData, hintKm, hintLocal, hintComb, hintLitros, hintPrecoL, hintTotal].forEach(el => {
+    if (el) el.textContent = "";
+  });
 
   if (!veiculoId || !dataSelecionada) return;
 
@@ -416,6 +421,7 @@ function buscarUltimoKm() {
     !e.excluido &&
     e.veiculoId === veiculoId &&
     e.data <= dataSelecionada &&
+    e.id !== editandoId &&
     (e.tipo === 'abastecimento' || e.tipo === 'manutencao')
   );
 
@@ -424,7 +430,9 @@ function buscarUltimoKm() {
     const ultimo = anteriores[0];
 
     // Sugestão automática de KM
-    kmInput.value = formatar(ultimo.km, 0);
+    if (!editandoId) {
+      kmInput.value = formatar(ultimo.km, 0);
+    }
 
     const dataFormatada = formatarDataBR(ultimo.data);
 
@@ -433,8 +441,19 @@ function buscarUltimoKm() {
       hintData.textContent = `Anterior: ${dataFormatada}`;
       hintKm.textContent = `Anterior: ${formatar(ultimo.km, 0)} km`;
     }
+
+    // Dicas extras para o formulário de abastecimento
+    if (tipo === 'abastecimento' && ultimo.tipo === 'abastecimento') {
+      if (hintLocal) hintLocal.textContent = `Ant: ${ultimo.detalhes.local || '-'}`;
+      if (hintComb) hintComb.textContent = `Ant: ${ultimo.detalhes.combustivel || '-'}`;
+      if (hintLitros) hintLitros.textContent = `Ant: ${formatar(ultimo.detalhes.litros, 3)} L`;
+      if (hintPrecoL) hintPrecoL.textContent = `Ant: R$ ${formatar(ultimo.detalhes.precoL, 2)}`;
+      if (hintTotal) hintTotal.textContent = `Ant: R$ ${formatar(ultimo.valorTotal, 2)}`;
+    }
   } else {
-    kmInput.value = "";
+    if (!editandoId) {
+      kmInput.value = "";
+    }
   }
 }
 
@@ -564,6 +583,7 @@ function editEntrada(id) {
   document.getElementById('entrada-obs').value = entrada.obs;
 
   toggleTipoCampos();
+  buscarUltimoKm();
 
   if (entrada.tipo === 'abastecimento') {
     document.getElementById('abs-local').value = entrada.detalhes.local;

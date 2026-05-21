@@ -18,10 +18,20 @@
     <div class="brand">
       <div class="logo">CarLog</div>
       <button id="btn-theme-toggle" onclick="toggleTheme()" title="Alternar Tema">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
         </svg>
-        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
         </svg>
       </button>
@@ -48,7 +58,8 @@
             <img id="user-photo" src="" alt="Usuário" onclick="toggleUserMenu()" referrerpolicy="no-referrer">
             <div id="user-dropdown" class="dropdown-content">
               <div class="close-dropdown" onclick="toggleUserMenu()">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -57,20 +68,34 @@
               <hr>
               <button id="btn-sync" onclick="sincronizarComNuvem(true)">
                 <span class="icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                </span> 
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                </span>
                 <span id="btn-sync-text">Sincronizar Nuvem</span>
               </button>
               <button id="btn-purge" onclick="purgarRegistrosExcluidos()">
                 <span class="icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
                 </span>
                 Limpar Lixeira
               </button>
               <hr>
               <button id="btn-logout" onclick="logout()">
                 <span class="icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
                 </span>
                 Sair da Conta
               </button>
@@ -153,23 +178,38 @@
         -->
         <div id="campos-abastecimento" class="tipo-especifico">
           <div class="grid-2">
-            <input type="text" id="abs-local" placeholder="Posto / Local">
-            <select id="abs-combustivel">
-              <option value="" disabled selected>Tipo de Combustível</option>
-              <option value="Etanol">Etanol</option>
-              <option value="Etanol Aditivado">Etanol Aditivado</option>
-              <option value="Gasolina">Gasolina</option>
-              <option value="Gasolina Aditivada">Gasolina Aditivada</option>
-              <option value="Diesel">Diesel</option>
-            </select>
+            <div class="input-container">
+              <input type="text" id="abs-local" placeholder="Posto / Local">
+              <small id="hint-abs-local" class="field-hint"></small>
+            </div>
+            <div class="input-container">
+              <select id="abs-combustivel">
+                <option value="" disabled selected>Tipo de Combustível</option>
+                <option value="Etanol">Etanol</option>
+                <option value="Etanol Aditivado">Etanol Aditivado</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Gasolina Aditivada">Gasolina Aditivada</option>
+                <option value="Diesel">Diesel</option>
+              </select>
+              <small id="hint-abs-combustivel" class="field-hint"></small>
+            </div>
           </div>
           <div class="grid-3">
-            <input type="text" id="abs-litros" placeholder="Litros" inputmode="numeric"
-              oninput="aplicarMascara(this, 3); calcAbastecimento('litros')">
-            <input type="text" id="abs-preco-litro" placeholder="Preço por Litro" inputmode="numeric"
-              oninput="aplicarMascara(this, 2); calcAbastecimento('preco')">
-            <input type="text" id="abs-total" placeholder="Preço Total" inputmode="numeric"
-              oninput="aplicarMascara(this, 2); calcAbastecimento('total')">
+            <div class="input-container">
+              <input type="text" id="abs-litros" placeholder="Litros" inputmode="numeric"
+                oninput="aplicarMascara(this, 3); calcAbastecimento('litros')">
+              <small id="hint-abs-litros" class="field-hint"></small>
+            </div>
+            <div class="input-container">
+              <input type="text" id="abs-preco-litro" placeholder="Preço por Litro" inputmode="numeric"
+                oninput="aplicarMascara(this, 2); calcAbastecimento('preco')">
+              <small id="hint-abs-preco-litro" class="field-hint"></small>
+            </div>
+            <div class="input-container">
+              <input type="text" id="abs-total" placeholder="Preço Total" inputmode="numeric"
+                oninput="aplicarMascara(this, 2); calcAbastecimento('total')">
+              <small id="hint-abs-total" class="field-hint"></small>
+            </div>
           </div>
         </div>
 
