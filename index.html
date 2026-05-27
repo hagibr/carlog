@@ -179,7 +179,10 @@
         <div id="campos-abastecimento" class="tipo-especifico">
           <div class="grid-2">
             <div class="input-container">
-              <input type="text" id="abs-local" placeholder="Posto / Local">
+              <div class="autocomplete-wrapper">
+                <input type="text" id="abs-local" placeholder="Posto / Local" autocomplete="off">
+                <div id="suggestions-abs-local" class="autocomplete-suggestions" style="display:none;"></div>
+              </div>
               <small id="hint-abs-local" class="field-hint"></small>
             </div>
             <div class="input-container">
@@ -218,7 +221,10 @@
           Exibidos apenas quando o tipo 'manutencao' esta selecionado.
         -->
         <div id="campos-manutencao" class="tipo-especifico" style="display:none;">
-          <input type="text" id="man-local" placeholder="Oficina / Loja">
+          <div class="autocomplete-wrapper">
+            <input type="text" id="man-local" placeholder="Oficina / Loja" autocomplete="off">
+            <div id="suggestions-man-local" class="autocomplete-suggestions" style="display:none;"></div>
+          </div>
           <div class="grid-2">
             <input type="text" id="man-pecas" placeholder="Valor Peças" inputmode="numeric"
               oninput="aplicarMascara(this, 2)">

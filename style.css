@@ -659,3 +659,36 @@ body.dark-mode .status-badge.edit {
   background: #f8f9fa;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
+
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1002;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.autocomplete-item {
+  padding: 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background-color: var(--primary);
+  color: white;
+}

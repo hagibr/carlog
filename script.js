@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-novo-veiculo').onsubmit = addVeiculo;
   document.getElementById('form-entrada').onsubmit = addEntrada;
 
+  setupAutocomplete('abs-local', 'suggestions-abs-local', 'abastecimento');
+  setupAutocomplete('man-local', 'suggestions-man-local', 'manutencao');
+
   // Inicializa o tema salvo no localStorage
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
@@ -1083,4 +1086,119 @@ function purgarRegistrosExcluidos() {
   } else {
     alert("Nenhum registro excluído há mais de 30 dias foi encontrado.");
   }
+}
+
+/**
+ * Busca locais únicos (postos ou oficinas) para sugestão no autocomplete.
+ * @param {string} tipo - Tipo do registro (abastecimento ou manutencao).
+ * @param {string} query - O texto digitado pelo usuário.
+ * @returns {Array} Lista de strings com locais únicos que contêm a query.
+ */
+function getUniqueLocals(tipo, query) {
+  const q = query.toLowerCase();
+  const locals = entradas
+    .filter(e => !e.excluido && e.tipo === tipo && e.detalhes && e.detalhes.local)
+    .map(e => e.detalhes.local);
+  
+  const unique = [...new Set(locals)];
+  return unique
+    .filter(l => l.toLowerCase().includes(q))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Configura o comportamento de autocomplete para um campo de texto.
+ * @param {string} inputId - ID do elemento input.
+ * @param {string} suggestionId - ID do container de sugestões.
+ * @param {string} type - Tipo de registro para filtrar dados.
+ */
+function setupAutocomplete(inputId, suggestionId, type) {
+  const input = document.getElementById(inputId);
+  const container = document.getElementById(suggestionId);
+  let currentFocus = -1;
+
+  function atualizarListaSugestoes() {
+    const val = input.value;
+    container.style.display = 'none';
+
+    const suggestions = getUniqueLocals(type, val);
+    if (suggestions.length === 0) return;
+
+    container.innerHTML = '';
+    container.style.display = 'block';
+    currentFocus = -1;
+
+    suggestions.forEach(text => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-item';
+      item.textContent = text;
+      item.addEventListener('click', () => {
+        input.value = text;
+        container.style.display = 'none';
+      });
+      container.appendChild(item);
+    });
+  }
+
+  input.addEventListener('input', () => {
+    if (!input.value) {
+      container.style.display = 'none';
+      return;
+    }
+    atualizarListaSugestoes();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    // Se pressionar seta para baixo com a lista fechada, abre a lista (mesmo vazio)
+    if (e.key === 'ArrowDown' && container.style.display === 'none') {
+      e.preventDefault();
+      atualizarListaSugestoes();
+      return;
+    }
+
+    const items = container.getElementsByClassName('autocomplete-item');
+    if (items.length === 0 || container.style.display === 'none') return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      currentFocus++;
+      atualizarFoco(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      currentFocus--;
+      atualizarFoco(items);
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      // Se a caixa de sugestões está visível, interceptamos o Enter/Tab
+      if (container.style.display !== 'none') {
+        if (currentFocus > -1 && items[currentFocus]) {
+          if (e.key === 'Enter') e.preventDefault(); // Evita o submit do form no Enter
+          items[currentFocus].click();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          container.style.display = 'none';
+        } else {
+          container.style.display = 'none';
+        }
+      }
+    } else if (e.key === 'Escape') {
+      container.style.display = 'none';
+      currentFocus = -1;
+    }
+  });
+
+  function atualizarFoco(items) {
+    Array.from(items).forEach(i => i.classList.remove('active'));
+    if (currentFocus >= items.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = items.length - 1;
+    
+    const activeItem = items[currentFocus];
+    activeItem.classList.add('active');
+    
+    // Garante que o item focado esteja visível no scroll
+    activeItem.scrollIntoView({ block: 'nearest' });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target !== input) container.style.display = 'none';
+  });
 }
